@@ -1,0 +1,13 @@
+---
+title: Data Processing
+author: Casey Bates
+date: '2019-02-02'
+slug: data-processing
+categories:
+  - R
+tags:
+  - R Markdown
+comments: no
+images: ~
+---
+

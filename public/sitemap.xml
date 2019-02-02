@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/post/data-processing/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/the-figure-shortcode/</loc>
     <lastmod>2018-12-24T12:29:41+08:00</lastmod>
   </url>
@@ -90,7 +95,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-12-24T12:29:41+08:00</lastmod>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -101,20 +106,20 @@
   </url>
   
   <url>
+    <loc>/post/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/posts/</loc>
     <lastmod>2018-12-24T12:29:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2015-07-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>/tags/r-markdown/</loc>
-    <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

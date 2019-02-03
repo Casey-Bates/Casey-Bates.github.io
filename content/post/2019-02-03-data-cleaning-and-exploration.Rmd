@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.width = 6, fig.height = 3.7)
 
 A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the [Garfield County Assessor website](https://www.garfield-county.com/assessor/comparable-sales.aspx). 
 
-```{r data_processing, message=FALSE, include=FALSE}
+```{r data_processing, message=FALSE}
 # This chunk includes the data processing steps to wrangle and clean the data
 library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator
 library(readxl) # Tidyverse package for reading in Excel files
@@ -123,13 +123,13 @@ ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)
   coord_cartesian(ylim = c(1000000, 3000000))
 ```
 
-```{r, include = FALSE}
-# High sale price observations
+## High sale price observations
+```{r high_sale_price}
 home_sales %>% arrange(desc(sale_price)) %>% select(c("sale_price", "location", "classification", "bedrooms", "square_feet")) %>% head(30)
 ```
 
-```{r, include = FALSE}
-# Remove erroneous high sale price observations
+## Remove erroneous high sale price observations
+```{r remove_highs}
 home_sales_fix <- home_sales %>% filter(location != "RIFLE" | classification != "Townhome" | sale_price != 2200000)
 home_sales_fix %>% filter(location == "RIFLE" & classification == "Townhome") %>% arrange(desc(sale_price)) %>% head(10)
 ```
@@ -178,8 +178,8 @@ ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
   facet_wrap(~ location)
 ```
 
-```{r seattle_rain, include = FALSE}
 # Import seattle rain gauge dataset
+```{r seattle_rain}
 seattle_rain <- read_csv("Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv")
 ```
 

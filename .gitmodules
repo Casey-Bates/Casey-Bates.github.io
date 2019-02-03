@@ -7,3 +7,6 @@
 [submodule "themes/minimal"]
 	path = themes/minimal
 	url = https://github.com/calintat/minimal.git
+[submodule "themes/themes/hermit"]
+	path = themes/themes/hermit
+	url = https://github.com/Track3/hermit.git

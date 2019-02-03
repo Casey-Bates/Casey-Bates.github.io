@@ -3,12 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/2019/02/03/data-cleaning-and-exploration/</loc>
+    <loc>/post/data-cleaning-and-exploration/</loc>
     <lastmod>2019-02-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/2019/02/03/fitting-models-with-purrr-and-broom/</loc>
+    <loc>/post/fitting-models-with-purrr-and-broom/</loc>
     <lastmod>2019-02-03T00:00:00+00:00</lastmod>
   </url>
   
@@ -18,13 +18,13 @@
   </url>
   
   <url>
-    <loc>/tags/broom/</loc>
-    <lastmod>2019-02-03T00:00:00+00:00</lastmod>
+    <loc>/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/</loc>
+    <loc>/tags/broom/</loc>
+    <lastmod>2019-02-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -66,12 +66,6 @@
   
   <url>
     <loc>/tags/purrr/</loc>
-    <lastmod>2019-02-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
     <lastmod>2019-02-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

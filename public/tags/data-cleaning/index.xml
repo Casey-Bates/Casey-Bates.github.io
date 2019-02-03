@@ -6,19 +6,20 @@
     <description>Recent content in Data Cleaning on Lost in the tidyverse</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sat, 02 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 03 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/data-cleaning/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Data Processing with tidyverse</title>
-      <link>/post/data-processing-with-tidyverse/</link>
-      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      <title>Data Cleaning and Exploration</title>
+      <link>/2019/02/03/data-cleaning-and-exploration/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/data-processing-with-tidyverse/</guid>
-      <description></description>
+      <guid>/2019/02/03/data-cleaning-and-exploration/</guid>
+      <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
+ Processing the data  Import two Excel files:
+single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
     </item>
     
   </channel>

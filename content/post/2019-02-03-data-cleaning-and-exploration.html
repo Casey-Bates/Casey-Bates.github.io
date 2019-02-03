@@ -1,0 +1,224 @@
+---
+title: "Data Cleaning and Exploration"
+author: "Casey Bates"
+date: '2019-02-03'
+slug: data-cleaning-and-exploration
+tags:
+- tidyverse
+- ggplot2
+- dplyr
+- data cleaning
+categories: R
+---
+
+
+
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the <a href="https://www.garfield-county.com/assessor/comparable-sales.aspx">Garfield County Assessor website</a>.</p>
+</div>
+<div id="processing-the-data" class="section level2">
+<h2>Processing the data</h2>
+<ul>
+<li><p>Import two Excel files:</p>
+<ol style="list-style-type: decimal">
+<li>single family home sales, and</li>
+<li>condo &amp; townhome sales</li>
+</ol></li>
+<li>Replace spaces in column names with underscore and make lowercase</li>
+<li>Rename some columns</li>
+<li>Add <code>classification</code> column to <code>single_family</code> dataset
+<ul>
+<li>Set all values to “Single Family”</li>
+</ul></li>
+<li>Use <code>bind_rows()</code> to combine the datasets into one</li>
+<li><p>Remove “Garage Only” observations</p></li>
+</ul>
+</div>
+<div id="glimpse-of-the-data" class="section level2">
+<h2>Glimpse of the data</h2>
+<pre class="r"><code>glimpse(home_sales)</code></pre>
+<pre><code>## Observations: 1,967
+## Variables: 14
+## $ account             &lt;chr&gt; &quot;R340967&quot;, &quot;R340073&quot;, &quot;R112063&quot;, &quot;R580140&quot;...
+## $ parcel_number       &lt;chr&gt; &quot;239334401005&quot;, &quot;239334200010&quot;, &quot;239335100...
+## $ reception           &lt;chr&gt; &quot;879240&quot;, &quot;870778&quot;, &quot;869383&quot;, &quot;857328&quot;, &quot;8...
+## $ sale_date           &lt;chr&gt; &quot;6/29/2016&quot;, &quot;11/24/2015&quot;, &quot;10/13/2015&quot;, &quot;...
+## $ sale_price          &lt;dbl&gt; 650000, 560000, 2750000, 630500, 2800000, ...
+## $ situs_address       &lt;chr&gt; &quot;000066 N 2ND ST&quot;, &quot;000276 10TH ST&quot;, &quot;0008...
+## $ location            &lt;chr&gt; &quot;CARBONDALE&quot;, &quot;CARBONDALE&quot;, &quot;CARBONDALE&quot;, ...
+## $ architectural_style &lt;chr&gt; &quot;ONE STORY&quot;, &quot;ONE STORY&quot;, &quot;ONE STORY&quot;, &quot;ON...
+## $ year_built          &lt;dbl&gt; 1970, 1971, 2002, 1999, 2008, 1994, 1993, ...
+## $ bedrooms            &lt;dbl&gt; 0, 1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 2, 2, 2, ...
+## $ baths               &lt;dbl&gt; 0.00, 1.00, 0.75, 1.00, 1.00, 1.00, 1.00, ...
+## $ square_feet         &lt;dbl&gt; 0, 480, 680, 710, 764, 804, 825, 957, 960,...
+## $ legal               &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 Subdivi...
+## $ classification      &lt;chr&gt; &quot;Single Family&quot;, &quot;Single Family&quot;, &quot;Single ...</code></pre>
+</div>
+<div id="ggplot2-package-in-r" class="section level2">
+<h2><code>ggplot2</code> package in R</h2>
+<ul>
+<li>Created by Hadley Wickham</li>
+<li>Built on the “Grammar of Graphics” principles</li>
+<li>Core <strong>tidyverse</strong> package</li>
+<li>Every ggplot2 plot has 3 key components:
+<ul>
+<li><strong>Data</strong></li>
+<li><strong>Aesthetic mappings</strong> between variables and visuals</li>
+<li>Layer(s) to describe how to render each observation (usually created with a <strong>geom</strong> function)</li>
+</ul></li>
+</ul>
+</div>
+<div id="basic-scatterplot" class="section level2">
+<h2>Basic scatterplot</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
+  geom_point()</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_location-1.png" width="576" /></p>
+</div>
+<div id="transparency-and-color-by-location" class="section level2">
+<h2>Transparency and color by location</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5)</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_location_color-1.png" width="576" /></p>
+</div>
+<div id="zooming-into-sales-above-1m" class="section level2">
+<h2>Zooming into sales above $1M</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_zoom-1.png" width="576" /></p>
+</div>
+<div id="add-random-noise-with-jitter" class="section level2">
+<h2>Add random noise with jitter</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_zoom_jitter-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft." class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_bw-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft.-1" class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_fixbw-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-feet" class="section level2">
+<h2>Linear model: sale price vs. square feet</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall-1.png" width="576" /></p>
+</div>
+<div id="linear-model-with-errors-removed" class="section level2">
+<h2>Linear model with errors removed</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_fix-1.png" width="576" /></p>
+</div>
+<div id="linear-model-facetted-by-location" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_facet-1.png" width="576" /></p>
+</div>
+<div id="linear-model-facetted-by-location-1" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_facet_fix-1.png" width="576" /></p>
+</div>
+<div id="tidying-wide-datasets" class="section level2">
+<h2>Tidying wide datasets</h2>
+<pre class="r"><code>seattle_rain # Display Monthly Rain Gauge Accumulations for Seattle</code></pre>
+<pre><code>## # A tibble: 175 x 18
+##    Date   RG01  RG02  RG03  RG04  RG05  RG07  RG08  RG09 RG10_30  RG11
+##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 11/3…  2.43  3.36 2.88   2.48 0.78   2.49 2.57   2.93    3.25  2.38
+##  2 12/3…  4.31  1.4  5.46   4.8  1.99   5.06 2.48   2.35    6.48  4.95
+##  3 01/3…  6.55  7.35 5.84   6.48 7.57   4.47 7.39   7.31    5.42  6.58
+##  4 02/2…  1.61  1.81 1.7    1.49 1.11   1.5  1.56   1.73    1.18  1.37
+##  5 03/3…  5.01  5.88 3.12   5.01 5.09   5.15 5.14   5.01    5.68  4.01
+##  6 04/3…  2.27  3.15 2.69   2.56 2.2    2.49 2.5    1.45    1.78  2.34
+##  7 05/3…  0.91  1.49 1.51   1.4  0.43   1.59 0.98   0.93    0.83  1.45
+##  8 06/3…  0.49  0.89 0.4    0.34 0.570  0.94 0.75   0.79    0.33  0.82
+##  9 07/3…  0.12  0.18 0.16   0.51 0.17   0.89 0.21   0.06    0.14  0.2 
+## 10 08/3…  0.33  0.46 0.290  0.26 0.37   1.33 0.570  0.22    0.68  0.3 
+## # ... with 165 more rows, and 7 more variables: RG12 &lt;dbl&gt;, RG14 &lt;dbl&gt;,
+## #   RG15 &lt;dbl&gt;, RG16 &lt;dbl&gt;, RG17 &lt;dbl&gt;, RG18 &lt;dbl&gt;, RG20_25 &lt;dbl&gt;</code></pre>
+</div>
+<div id="gather-columns-rg01-through-rg20_25" class="section level2">
+<h2><code>gather</code> columns <code>RG01</code> through <code>RG20_25</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
+seattle_rain_tall</code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gather-all-columns-except-date" class="section level2">
+<h2><code>gather</code> all columns <em>except</em> <code>Date</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
+seattle_rain_tall </code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gathering-in-sql" class="section level2">
+<h2>Gathering in SQL</h2>
+<pre class="sql"><code>SELECT date, &#39;rg01&#39; as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
+SELECT date, &#39;rg02&#39; as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg03&#39; as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg04&#39; as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg05&#39; as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg07&#39; as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg08&#39; as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg09&#39; as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg10_30&#39; as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg11&#39; as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg12&#39; as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg14&#39; as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg15&#39; as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg16&#39; as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg17&#39; as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg18&#39; as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg20_25&#39; as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
+ORDER BY rain_gauge, date;</code></pre>
+</div>

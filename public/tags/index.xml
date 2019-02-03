@@ -5,8 +5,8 @@
     <link>/tags/</link>
     <description>Recent content in Tags on Lost in the tidyverse</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Sat, 02 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 03 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,18 +14,63 @@
     <item>
       <title>Broom</title>
       <link>/tags/broom/</link>
-      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/broom/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Processing</title>
-      <link>/tags/processing/</link>
-      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      <title>Data Cleaning</title>
+      <link>/tags/data-cleaning/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/processing/</guid>
+      <guid>/tags/data-cleaning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dplyr</title>
+      <link>/tags/dplyr/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/dplyr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ggplot2</title>
+      <link>/tags/ggplot2/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ggplot2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linear Regression</title>
+      <link>/tags/linear-regression/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/linear-regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Purrr</title>
+      <link>/tags/purrr/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/purrr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tidyverse</title>
+      <link>/tags/tidyverse/</link>
+      <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/tidyverse/</guid>
       <description></description>
     </item>
     

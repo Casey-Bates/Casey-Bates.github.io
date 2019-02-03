@@ -28,8 +28,7 @@
       
       <guid>/post/data-cleaning-and-exploration/</guid>
       <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
- Processing the data  Import two Excel files:
-single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
+# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &amp;#39;%&amp;lt;&amp;gt;%&amp;#39; pipe operator library(knitr) # For nicely formatted tables # Read-in townhomes and condo sales data townhomes &amp;lt;- read_xlsx(&amp;quot;2017-comparable-sales-condos-townhomes.</description>
     </item>
     
     <item>
@@ -39,7 +38,7 @@ single family home sales, and condo &amp;amp; townhome sales  Replace spaces in 
       
       <guid>/post/fitting-models-with-purrr-and-broom/</guid>
       <description>Motivation Utilize tidyverse tools and the broom package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the Garfield County Assessor website that contains 2 years of data from summer 2014 through summer 2016.
- Outline  Part 1: Exploring the dataset with ggplot2  Tidying wide datasets with tidyr  Part 2: Many models with purrr and broom   Part 1: Exploring the dataset with ggplot2 Processing the data  Import two Excel files:</description>
+# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &amp;#39;%&amp;lt;&amp;gt;%&amp;#39; pipe operator # Read-in townhomes and condo sales data townhomes &amp;lt;- read_xlsx(&amp;quot;2017-comparable-sales-condos-townhomes.</description>
     </item>
     
   </channel>

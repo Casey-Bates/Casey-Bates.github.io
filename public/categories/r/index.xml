@@ -23,11 +23,32 @@ single family home sales, and condo &amp;amp; townhome sales  Replace spaces in 
     </item>
     
     <item>
+      <title>Data Processing</title>
+      <link>/posts/data-processing/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/data-processing/</guid>
+      <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
+ Processing the data  Import two Excel files:
+single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
+    </item>
+    
+    <item>
       <title>Multiple linear models with purrr and broom</title>
       <link>/post/multiple-linear-models-with-purrr-and-broom/</link>
       <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/multiple-linear-models-with-purrr-and-broom/</guid>
+      <description>Motivation Utilize tidyverse tools and the broom package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the Garfield County Assessor website that contains 2 years of data from summer 2014 through summer 2016.
+ Outline  Part 1: Exploring the dataset with ggplot2  Tidying wide datasets with tidyr  Part 2: Many models with purrr and broom   Part 1: Exploring the dataset with ggplot2 Processing the data  Import two Excel files:</description>
+    </item>
+    
+    <item>
+      <title>Multiple linear models with purrr and broom</title>
+      <link>/posts/multiple-linear-models-with-purrr-and-broom/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/multiple-linear-models-with-purrr-and-broom/</guid>
       <description>Motivation Utilize tidyverse tools and the broom package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the Garfield County Assessor website that contains 2 years of data from summer 2014 through summer 2016.
  Outline  Part 1: Exploring the dataset with ggplot2  Tidying wide datasets with tidyr  Part 2: Many models with purrr and broom   Part 1: Exploring the dataset with ggplot2 Processing the data  Import two Excel files:</description>
     </item>

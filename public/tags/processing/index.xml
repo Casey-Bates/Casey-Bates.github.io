@@ -22,5 +22,16 @@
 single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
     </item>
     
+    <item>
+      <title>Data Processing</title>
+      <link>/posts/data-processing/</link>
+      <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/data-processing/</guid>
+      <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
+ Processing the data  Import two Excel files:
+single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
+    </item>
+    
   </channel>
 </rss>

@@ -1,39 +1,62 @@
-baseurl = "/"
+baseURL = "/"
+languageCode = "en-us"
 title = "Lost in the tidyverse"
-author = "Casey Bates"
-canonifyurls = true
-languagecode = "en"
-theme = "basics"
-
+theme = "minimal"
+disqusShortname = "username" # delete this to disable disqus comments
 googleAnalytics = ""
-disqusShortname = ""
-disable_mathjax = false
-
-pygmentsstyle      = "vs"
-pygmentscodefences = true
-
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [params]
-  sitename = "Lost in the tidyverse"
+    author = "Casey Bates"
+    description = "Deriving insights from data"
+    githubUsername = "Casey-Bates"
+    accent = "blue"
+    showBorder = true
+    backgroundColor = "white"
+    font = "Raleway" # should match the name on Google Fonts!
+    highlight = true
+    highlightStyle = "solarized-dark"
+    highlightLanguages = ["go", "haskell", "kotlin", "scala", "swift"]
 
 [[menu.main]]
+    url = "/"
     name = "Home"
-    url = "https://casey-bates.com"
     weight = 1
+
 [[menu.main]]
-    name = "GitHub"
-    url = "https://github.com/Casey-Bates/"
+    url = "/post/"
+    name = "Posts"
     weight = 2
+
 [[menu.main]]
-    name = "LinkedIn"
-    url = "https://www.linkedin.com/in/caseybates/"
+    url = "/project/"
+    name = "Projects"
     weight = 3
-#[[menu.main]]
- #   name = "Twitter"
-  #  url = "https://twitter.com/road2stat"
-   # weight = 4
-#[[menu.main]]
- #   name = "RSS"
-  #  url = "/index.xml"
+
+# Social icons to be shown on the right-hand side of the navigation bar
+# The "name" field should match the name of the icon to be used
+# The list of available icons can be found at http://fontawesome.io/icons/
+
+#[[menu.icon]]
+ #   url = "mailto:me@example.com"
+  #  name = "envelope-o"
+   # weight = 1
+
+[[menu.icon]]
+    url = "https://github.com/Casey-Bates/"
+    name = "github"
+    weight = 2
+
+#[[menu.icon]]
+ #   url = "https://twitter.com/username/"
+  #  name = "twitter"
+   # weight = 3
+
+[[menu.icon]]
+    url = "https://www.linkedin.com/in/caseybates/"
+    name = "linkedin"
+    weight = 4
+
+#[[menu.icon]]
+ #   url = "https://www.stackoverflow.com/username/"
+  #  name = "stack-overflow"
    # weight = 5

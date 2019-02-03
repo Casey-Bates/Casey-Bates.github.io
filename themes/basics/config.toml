@@ -1,0 +1,39 @@
+baseurl = "/"
+title = "Lost in the tidyverse"
+author = "Casey Bates"
+canonifyurls = true
+languagecode = "en"
+theme = "basics"
+
+googleAnalytics = ""
+disqusShortname = ""
+disable_mathjax = false
+
+pygmentsstyle      = "vs"
+pygmentscodefences = true
+
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[params]
+  sitename = "Lost in the tidyverse"
+
+[[menu.main]]
+    name = "Home"
+    url = "https://casey-bates.com"
+    weight = 1
+[[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/Casey-Bates/"
+    weight = 2
+[[menu.main]]
+    name = "LinkedIn"
+    url = "https://www.linkedin.com/in/caseybates/"
+    weight = 3
+#[[menu.main]]
+ #   name = "Twitter"
+  #  url = "https://twitter.com/road2stat"
+   # weight = 4
+#[[menu.main]]
+ #   name = "RSS"
+  #  url = "/index.xml"
+   # weight = 5

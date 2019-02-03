@@ -1,0 +1,564 @@
+---
+title: "Multiple linear models with purrr and broom"
+author: "Casey Bates"
+date: '2019-02-02'
+slug: multiple-linear-models-with-purrr-and-broom
+tags: broom
+categories: R
+---
+
+
+
+<div id="motivation" class="section level2">
+<h2>Motivation</h2>
+<p>Utilize <code>tidyverse</code> tools and the <code>broom</code> package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the <a href="https://www.garfield-county.com/assessor/comparable-sales.aspx">Garfield County Assessor website</a> that contains 2 years of data from summer 2014 through summer 2016.</p>
+</div>
+<div id="outline" class="section level2">
+<h2>Outline</h2>
+<ul>
+<li>Part 1: Exploring the dataset with <code>ggplot2</code>
+<ul>
+<li>Tidying wide datasets with <code>tidyr</code></li>
+</ul></li>
+<li>Part 2: Many models with <code>purrr</code> and <code>broom</code></li>
+</ul>
+</div>
+<div id="part-1-exploring-the-dataset-with-ggplot2" class="section level2">
+<h2>Part 1: Exploring the dataset with <code>ggplot2</code></h2>
+<div id="processing-the-data" class="section level3">
+<h3>Processing the data</h3>
+<ul>
+<li><p>Import two Excel files:</p>
+<ol style="list-style-type: decimal">
+<li>single family home sales, and</li>
+<li>condo &amp; townhome sales</li>
+</ol></li>
+<li>Replace spaces in column names with underscore and make lowercase</li>
+<li>Rename some columns</li>
+<li>Add <code>classification</code> column to <code>single_family</code> dataset
+<ul>
+<li>Set all values to “Single Family”</li>
+</ul></li>
+<li>Use <code>bind_rows()</code> to combine the datasets into one</li>
+<li><p>Remove “Garage Only” observations</p></li>
+</ul>
+</div>
+</div>
+<div id="glimpse-of-the-data" class="section level2">
+<h2>Glimpse of the data</h2>
+<pre class="r"><code>glimpse(home_sales)</code></pre>
+<pre><code>## Observations: 1,967
+## Variables: 14
+## $ account             &lt;chr&gt; &quot;R340967&quot;, &quot;R340073&quot;, &quot;R112063&quot;, &quot;R580140&quot;...
+## $ parcel_number       &lt;chr&gt; &quot;239334401005&quot;, &quot;239334200010&quot;, &quot;239335100...
+## $ reception           &lt;chr&gt; &quot;879240&quot;, &quot;870778&quot;, &quot;869383&quot;, &quot;857328&quot;, &quot;8...
+## $ sale_date           &lt;chr&gt; &quot;6/29/2016&quot;, &quot;11/24/2015&quot;, &quot;10/13/2015&quot;, &quot;...
+## $ sale_price          &lt;dbl&gt; 650000, 560000, 2750000, 630500, 2800000, ...
+## $ situs_address       &lt;chr&gt; &quot;000066 N 2ND ST&quot;, &quot;000276 10TH ST&quot;, &quot;0008...
+## $ location            &lt;chr&gt; &quot;CARBONDALE&quot;, &quot;CARBONDALE&quot;, &quot;CARBONDALE&quot;, ...
+## $ architectural_style &lt;chr&gt; &quot;ONE STORY&quot;, &quot;ONE STORY&quot;, &quot;ONE STORY&quot;, &quot;ON...
+## $ year_built          &lt;dbl&gt; 1970, 1971, 2002, 1999, 2008, 1994, 1993, ...
+## $ bedrooms            &lt;dbl&gt; 0, 1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 2, 2, 2, ...
+## $ baths               &lt;dbl&gt; 0.00, 1.00, 0.75, 1.00, 1.00, 1.00, 1.00, ...
+## $ square_feet         &lt;dbl&gt; 0, 480, 680, 710, 764, 804, 825, 957, 960,...
+## $ legal               &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 Subdivi...
+## $ classification      &lt;chr&gt; &quot;Single Family&quot;, &quot;Single Family&quot;, &quot;Single ...</code></pre>
+</div>
+<div id="ggplot2-package-in-r" class="section level2">
+<h2><code>ggplot2</code> package in R</h2>
+<ul>
+<li>Created by Hadley Wickham</li>
+<li>Built on the “Grammar of Graphics” principles</li>
+<li>Core <strong>tidyverse</strong> package</li>
+<li>Every ggplot2 plot has 3 key components:
+<ul>
+<li><strong>Data</strong></li>
+<li><strong>Aesthetic mappings</strong> between variables and visuals</li>
+<li>Layer(s) to describe how to render each observation (usually created with a <strong>geom</strong> function)</li>
+</ul></li>
+</ul>
+</div>
+<div id="basic-scatterplot" class="section level2">
+<h2>Basic scatterplot</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
+  geom_point()</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/scatter_location-1.png" width="576" /></p>
+</div>
+<div id="transparency-and-color-by-location" class="section level2">
+<h2>Transparency and color by location</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/scatter_location_color-1.png" width="576" /></p>
+</div>
+<div id="zooming-into-sales-above-1m" class="section level2">
+<h2>Zooming into sales above $1M</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/scatter_zoom-1.png" width="576" /></p>
+</div>
+<div id="add-random-noise-with-jitter" class="section level2">
+<h2>Add random noise with jitter</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/scatter_zoom_jitter-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft." class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_overall_bw-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft.-1" class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_overall_fixbw-1.png" width="576" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-feet" class="section level2">
+<h2>Linear model: sale price vs. square feet</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_overall-1.png" width="576" /></p>
+</div>
+<div id="linear-model-with-errors-removed" class="section level2">
+<h2>Linear model with errors removed</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_overall_fix-1.png" width="576" /></p>
+</div>
+<div id="linear-model-facetted-by-location" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_facet-1.png" width="576" /></p>
+</div>
+<div id="linear-model-facetted-by-location-1" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/lm_facet_fix-1.png" width="576" /></p>
+</div>
+<div id="boxplots-ordered-by-median-sale-price" class="section level2">
+<h2>Boxplots ordered by median sale price</h2>
+<pre class="r"><code>ggplot(home_sales_fix, 
+       aes(x = reorder(location, sale_price, fun = median), 
+           y = sale_price, fill = location)) + 
+  geom_boxplot() + theme(legend.position = &quot;bottom&quot;) +
+  labs(x = &quot;Ordered by Median Sale Price&quot;, y = &quot;Sale Price&quot;)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/boxplot_fix-1.png" width="576" /></p>
+</div>
+<div id="boxplots-ordered-by-median-sale-price-1" class="section level2">
+<h2>Boxplots ordered by median sale price</h2>
+<pre class="r"><code>ggplot(home_sales, 
+       aes(x = reorder(location, sale_price, fun = median), 
+           y = sale_price, fill = location)) + 
+  geom_boxplot() + theme(legend.position = &quot;bottom&quot;) +
+  labs(x = &quot;Ordered by Median Sale Price&quot;, y = &quot;Sale Price&quot;)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/boxplot-1.png" width="576" /></p>
+</div>
+<div id="tidying-wide-datasets" class="section level2">
+<h2>Tidying wide datasets</h2>
+<pre class="r"><code>seattle_rain # Display Monthly Rain Gauge Accumulations for Seattle</code></pre>
+<pre><code>## # A tibble: 175 x 18
+##    Date   RG01  RG02  RG03  RG04  RG05  RG07  RG08  RG09 RG10_30  RG11
+##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 11/3…  2.43  3.36 2.88   2.48 0.78   2.49 2.57   2.93    3.25  2.38
+##  2 12/3…  4.31  1.4  5.46   4.8  1.99   5.06 2.48   2.35    6.48  4.95
+##  3 01/3…  6.55  7.35 5.84   6.48 7.57   4.47 7.39   7.31    5.42  6.58
+##  4 02/2…  1.61  1.81 1.7    1.49 1.11   1.5  1.56   1.73    1.18  1.37
+##  5 03/3…  5.01  5.88 3.12   5.01 5.09   5.15 5.14   5.01    5.68  4.01
+##  6 04/3…  2.27  3.15 2.69   2.56 2.2    2.49 2.5    1.45    1.78  2.34
+##  7 05/3…  0.91  1.49 1.51   1.4  0.43   1.59 0.98   0.93    0.83  1.45
+##  8 06/3…  0.49  0.89 0.4    0.34 0.570  0.94 0.75   0.79    0.33  0.82
+##  9 07/3…  0.12  0.18 0.16   0.51 0.17   0.89 0.21   0.06    0.14  0.2 
+## 10 08/3…  0.33  0.46 0.290  0.26 0.37   1.33 0.570  0.22    0.68  0.3 
+## # ... with 165 more rows, and 7 more variables: RG12 &lt;dbl&gt;, RG14 &lt;dbl&gt;,
+## #   RG15 &lt;dbl&gt;, RG16 &lt;dbl&gt;, RG17 &lt;dbl&gt;, RG18 &lt;dbl&gt;, RG20_25 &lt;dbl&gt;</code></pre>
+</div>
+<div id="gather-columns-rg01-through-rg20_25" class="section level2">
+<h2><code>gather</code> columns <code>RG01</code> through <code>RG20_25</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
+seattle_rain_tall</code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gather-all-columns-except-date" class="section level2">
+<h2><code>gather</code> all columns <em>except</em> <code>Date</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
+seattle_rain_tall </code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gathering-in-sql" class="section level2">
+<h2>Gathering in SQL</h2>
+<pre class="sql"><code>SELECT date, &#39;rg01&#39; as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
+SELECT date, &#39;rg02&#39; as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg03&#39; as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg04&#39; as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg05&#39; as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg07&#39; as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg08&#39; as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg09&#39; as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg10_30&#39; as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg11&#39; as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg12&#39; as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg14&#39; as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg15&#39; as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg16&#39; as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg17&#39; as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg18&#39; as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg20_25&#39; as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
+ORDER BY rain_gauge, date;</code></pre>
+</div>
+<div id="part-2-many-models-with-purrr-and-broom" class="section level2">
+<h2>Part 2: Many models with <code>purrr</code> and <code>broom</code></h2>
+</div>
+<div id="linear-model-for-carbondale" class="section level2">
+<h2>Linear model for Carbondale</h2>
+<pre class="r"><code>carbondale &lt;- home_sales_fix %&gt;% 
+  filter(location == &quot;CARBONDALE&quot;)
+model &lt;- lm(sale_price ~ square_feet, data = carbondale)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sale_price ~ square_feet, data = carbondale)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -944784 -117066  -61120   10307 2478788 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 163668.19   34376.15   4.761 2.75e-06 ***
+## square_feet    206.21      12.97  15.900  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 309200 on 376 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.402,  Adjusted R-squared:  0.4005 
+## F-statistic: 252.8 on 1 and 376 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="transform-model-into-data-frame-with-broom" class="section level2">
+<h2>Transform model into data frame with <code>broom</code></h2>
+<pre class="r"><code>library(broom)
+tidy(model)</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  163668.   34376.       4.76 2.75e- 6
+## 2 square_feet     206.      13.0     15.9  6.66e-44</code></pre>
+</div>
+<div id="bind_rows-to-combine-models" class="section level2">
+<h2><code>bind_rows</code> to combine models</h2>
+<pre class="r"><code>carbondale &lt;- home_sales_fix %&gt;% 
+  filter(location == &quot;CARBONDALE&quot;)
+model1 &lt;- lm(sale_price ~ square_feet, data = carbondale)
+glenwood &lt;- home_sales_fix %&gt;% 
+  filter(location == &quot;GLENWOOD&quot;)
+model2 &lt;- lm(sale_price ~ square_feet, data = glenwood)
+bind_rows(tidy(model1), tidy(model2))</code></pre>
+<pre><code>## # A tibble: 4 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)  163668.  34376.        4.76 2.75e- 6
+## 2 square_feet     206.     13.0      15.9  6.66e-44
+## 3 (Intercept)  128578.  11400.       11.3  4.42e-26
+## 4 square_feet     138.      5.36     25.7  2.24e-89</code></pre>
+</div>
+<div id="step-1-nest-by-location" class="section level2">
+<h2>Step 1: <code>nest</code> by location</h2>
+<pre class="r"><code>home_sales_fix_models &lt;- home_sales_fix %&gt;% 
+  nest(-location)
+home_sales_fix_models</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   location   data               
+##   &lt;chr&gt;      &lt;list&gt;             
+## 1 CARBONDALE &lt;tibble [379 × 13]&gt;
+## 2 GLENWOOD   &lt;tibble [441 × 13]&gt;
+## 3 NEW CASTLE &lt;tibble [327 × 13]&gt;
+## 4 PARACHUTE  &lt;tibble [202 × 13]&gt;
+## 5 RIFLE      &lt;tibble [370 × 13]&gt;
+## 6 SILT       &lt;tibble [225 × 13]&gt;</code></pre>
+</div>
+<div id="alternate-syntax-used-by-wickham" class="section level2">
+<h2>Alternate syntax used by Wickham</h2>
+<pre class="r"><code>home_sales_fix %&gt;% 
+  group_by(location) %&gt;% 
+  nest()</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   location   data               
+##   &lt;chr&gt;      &lt;list&gt;             
+## 1 CARBONDALE &lt;tibble [379 × 13]&gt;
+## 2 GLENWOOD   &lt;tibble [441 × 13]&gt;
+## 3 NEW CASTLE &lt;tibble [327 × 13]&gt;
+## 4 PARACHUTE  &lt;tibble [202 × 13]&gt;
+## 5 RIFLE      &lt;tibble [370 × 13]&gt;
+## 6 SILT       &lt;tibble [225 × 13]&gt;</code></pre>
+</div>
+<div id="examine-the-data-for-new-castle" class="section level2">
+<h2>Examine the data for New Castle</h2>
+<pre class="r"><code>home_sales_fix_models$data[[3]]</code></pre>
+<pre><code>## # A tibble: 327 x 13
+##    account parcel_number reception sale_date sale_price situs_address
+##    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        
+##  1 R044215 212331109026  860557    3/16/2015     145000 000176 N 4TH…
+##  2 R380139 212331107012  868155    9/16/2015     195000 000146 N 2ND…
+##  3 R043923 212331110031  866949    8/14/2015     162000 000161 N 4TH…
+##  4 R380402 212331226003  875582    4/4/2016      205000 000222 N 7TH…
+##  5 R040070 212325300002  872566    1/13/2016     375000 000570 137 C…
+##  6 R380215 212331223016  861672    4/17/2015     176900 000640 W MAI…
+##  7 R015027 218106400058  858833    1/30/2015     255000 005341 214 C…
+##  8 R170410 218332101001  872474    1/13/2016     485000 008149 312 C…
+##  9 R005504 212330320001  866365    8/4/2015      268500 000601 LARIA…
+## 10 R005511 212330320008  878740    6/23/2016     299000 000623 LARIA…
+## # ... with 317 more rows, and 7 more variables: architectural_style &lt;chr&gt;,
+## #   year_built &lt;dbl&gt;, bedrooms &lt;dbl&gt;, baths &lt;dbl&gt;, square_feet &lt;dbl&gt;,
+## #   legal &lt;chr&gt;, classification &lt;chr&gt;</code></pre>
+</div>
+<div id="unnesting-returns-to-original" class="section level2">
+<h2>Unnesting returns to original</h2>
+<pre class="r"><code>unnest(home_sales_fix_models)</code></pre>
+<pre><code>## # A tibble: 1,944 x 14
+##    location account parcel_number reception sale_date sale_price
+##    &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;
+##  1 CARBOND… R340967 239334401005  879240    6/29/2016     650000
+##  2 CARBOND… R340073 239334200010  870778    11/24/20…     560000
+##  3 CARBOND… R112063 239335100057  869383    10/13/20…    2750000
+##  4 CARBOND… R580140 239334366004  857328    12/18/20…     630500
+##  5 CARBOND… R043949 239120300276  853541    9/12/2014    2800000
+##  6 CARBOND… R011301 239120300057  868354    9/21/2015     785000
+##  7 CARBOND… R011415 239325100148  861479    4/10/2015    1200000
+##  8 CARBOND… R005930 246304125013  875431    3/24/2016    1040000
+##  9 CARBOND… R040419 246303100026  865422    7/13/2015     340000
+## 10 CARBOND… R041666 239334268001  868224    9/15/2015     395000
+## # ... with 1,934 more rows, and 8 more variables: situs_address &lt;chr&gt;,
+## #   architectural_style &lt;chr&gt;, year_built &lt;dbl&gt;, bedrooms &lt;dbl&gt;,
+## #   baths &lt;dbl&gt;, square_feet &lt;dbl&gt;, legal &lt;chr&gt;, classification &lt;chr&gt;</code></pre>
+</div>
+<div id="step-2-map-to-fit-lm-to-each-dataset" class="section level2">
+<h2>Step 2: <code>map()</code> to fit lm to each dataset</h2>
+<pre class="r"><code>library(purrr)
+home_sales_fix_models &lt;- home_sales_fix %&gt;%
+  nest(-location) %&gt;% 
+  mutate(models = map(data, ~lm(sale_price ~ square_feet, .))) 
+  # data has been passed into lm through map function
+  # dot &quot;.&quot; is used for data in the lm call
+home_sales_fix_models</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   location   data                models  
+##   &lt;chr&gt;      &lt;list&gt;              &lt;list&gt;  
+## 1 CARBONDALE &lt;tibble [379 × 13]&gt; &lt;S3: lm&gt;
+## 2 GLENWOOD   &lt;tibble [441 × 13]&gt; &lt;S3: lm&gt;
+## 3 NEW CASTLE &lt;tibble [327 × 13]&gt; &lt;S3: lm&gt;
+## 4 PARACHUTE  &lt;tibble [202 × 13]&gt; &lt;S3: lm&gt;
+## 5 RIFLE      &lt;tibble [370 × 13]&gt; &lt;S3: lm&gt;
+## 6 SILT       &lt;tibble [225 × 13]&gt; &lt;S3: lm&gt;</code></pre>
+</div>
+<div id="examine-the-model-for-new-castle" class="section level2">
+<h2>Examine the model for New Castle</h2>
+<pre class="r"><code>home_sales_fix_models$models[[3]]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sale_price ~ square_feet, data = .)
+## 
+## Coefficients:
+## (Intercept)  square_feet  
+##     70045.8        130.7</code></pre>
+</div>
+<div id="step-3-use-map-to-tidy-each-model" class="section level2">
+<h2>Step 3: Use <code>map()</code> to tidy each model</h2>
+<pre class="r"><code>home_sales_fix_models &lt;- home_sales_fix %&gt;%
+  nest(-location) %&gt;% 
+  mutate(models = map(data, ~lm(sale_price ~ square_feet, .))) %&gt;% 
+  mutate(tidied = map(models, tidy))
+home_sales_fix_models</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   location   data                models   tidied          
+##   &lt;chr&gt;      &lt;list&gt;              &lt;list&gt;   &lt;list&gt;          
+## 1 CARBONDALE &lt;tibble [379 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 2 GLENWOOD   &lt;tibble [441 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 3 NEW CASTLE &lt;tibble [327 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 4 PARACHUTE  &lt;tibble [202 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 5 RIFLE      &lt;tibble [370 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 6 SILT       &lt;tibble [225 × 13]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;</code></pre>
+</div>
+<div id="examine-tidy-model-for-new-castle" class="section level2">
+<h2>Examine tidy model for New Castle</h2>
+<pre class="r"><code>home_sales_fix_models$tidied[[3]]</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   70046.  11041.        6.34 7.49e-10
+## 2 square_feet     131.      5.68     23.0  3.65e-70</code></pre>
+</div>
+<div id="step-4-unnest-to-tidy-table-of-coefficients" class="section level2">
+<h2>Step 4: <code>unnest</code> to tidy table of coefficients</h2>
+<pre class="r"><code>location_coeffs &lt;- home_sales_fix %&gt;%
+  nest(-location) %&gt;% 
+  mutate(models = map(data, ~lm(sale_price ~ square_feet, .))) %&gt;% 
+  mutate(tidied = map(models, tidy)) %&gt;% 
+  unnest(tidied)
+location_coeffs</code></pre>
+<pre><code>## # A tibble: 12 x 6
+##    location   term        estimate std.error statistic  p.value
+##    &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 CARBONDALE (Intercept) 163668.   34376.       4.76  2.75e- 6
+##  2 CARBONDALE square_feet    206.      13.0     15.9   6.66e-44
+##  3 GLENWOOD   (Intercept) 128578.   11400.      11.3   4.42e-26
+##  4 GLENWOOD   square_feet    138.       5.36    25.7   2.24e-89
+##  5 NEW CASTLE (Intercept)  70046.   11041.       6.34  7.49e-10
+##  6 NEW CASTLE square_feet    131.       5.68    23.0   3.65e-70
+##  7 PARACHUTE  (Intercept)  11651.   14526.       0.802 4.23e- 1
+##  8 PARACHUTE  square_feet    101.       8.07    12.5   9.75e-27
+##  9 RIFLE      (Intercept)  46757.    8363.       5.59  4.41e- 8
+## 10 RIFLE      square_feet     95.9      4.64    20.7   1.36e-63
+## 11 SILT       (Intercept)  98978.   15629.       6.33  1.31e- 9
+## 12 SILT       square_feet    100.       7.87    12.7   3.30e-28</code></pre>
+</div>
+<div id="location-slopes" class="section level2">
+<h2>Location slopes</h2>
+<pre class="r"><code>location_slopes &lt;-  location_coeffs %&gt;% 
+  filter(term == &quot;square_feet&quot;)%&gt;% 
+  arrange(estimate)
+location_slopes</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   location   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 RIFLE      square_feet     95.9      4.64      20.7 1.36e-63
+## 2 SILT       square_feet    100.       7.87      12.7 3.30e-28
+## 3 PARACHUTE  square_feet    101.       8.07      12.5 9.75e-27
+## 4 NEW CASTLE square_feet    131.       5.68      23.0 3.65e-70
+## 5 GLENWOOD   square_feet    138.       5.36      25.7 2.24e-89
+## 6 CARBONDALE square_feet    206.      13.0       15.9 6.66e-44</code></pre>
+</div>
+<div id="compute-residuals-for-rifle-pre-fix" class="section level2">
+<h2>Compute residuals for Rifle, pre-fix</h2>
+<pre class="r"><code>library(modelr) # for add_residuals function
+rifle &lt;- filter(home_sales, location == &quot;RIFLE&quot;)
+rifle_model &lt;- lm(sale_price ~ square_feet, data = rifle)
+rifle %&gt;% 
+  add_residuals(rifle_model) %&gt;% 
+  ggplot(aes(square_feet, resid)) + # new resid column
+  geom_hline(yintercept = 0, color = &quot;white&quot;, size = 3) +
+  geom_line() +
+  ggtitle(&quot;Remaining pattern&quot;)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/rifle_resids-1.png" width="576" /></p>
+</div>
+<div id="compute-residuals-for-rifle-fixed" class="section level2">
+<h2>Compute residuals for Rifle, fixed</h2>
+<pre class="r"><code>rifle &lt;- filter(home_sales_fix, location == &quot;RIFLE&quot;)
+rifle_model &lt;- lm(sale_price ~ square_feet, data = rifle)
+rifle %&gt;% 
+  add_residuals(rifle_model) %&gt;% 
+  ggplot(aes(square_feet, resid)) +
+  geom_hline(yintercept = 0, color = &quot;white&quot;, size = 3) +
+  geom_line() +
+  ggtitle(&quot;Remaining pattern&quot;)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/rifle_resids_v2-1.png" width="576" /></p>
+</div>
+<div id="compute-residuals" class="section level2">
+<h2>Compute residuals</h2>
+<pre class="r"><code># Call add_residuals() with each model-data pair:
+home_sales_fix_models &lt;- home_sales_fix_models %&gt;% 
+  # Add &#39;resid&#39; column to &#39;data&#39; df list with mutate 
+  mutate(data = map2(data, models, add_residuals))
+home_sales_fix_models</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   location   data                models   tidied          
+##   &lt;chr&gt;      &lt;list&gt;              &lt;list&gt;   &lt;list&gt;          
+## 1 CARBONDALE &lt;tibble [379 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 2 GLENWOOD   &lt;tibble [441 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 3 NEW CASTLE &lt;tibble [327 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 4 PARACHUTE  &lt;tibble [202 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 5 RIFLE      &lt;tibble [370 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;
+## 6 SILT       &lt;tibble [225 × 14]&gt; &lt;S3: lm&gt; &lt;tibble [2 × 5]&gt;</code></pre>
+</div>
+<div id="examine-residuals-for-new-castle" class="section level2">
+<h2>Examine residuals for New Castle</h2>
+<pre class="r"><code>home_sales_fix_models$data[[3]] %&gt;% 
+  select(sale_price, square_feet, resid)</code></pre>
+<pre><code>## # A tibble: 327 x 3
+##    sale_price square_feet    resid
+##         &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;
+##  1     145000         450   16124.
+##  2     195000         768   24551.
+##  3     162000         800  -12632.
+##  4     205000         864   22001.
+##  5     375000         900  187294.
+##  6     176900         947  -16950.
+##  7     255000        1064   45854.
+##  8     485000        1076  274285.
+##  9     268500        1148   48372.
+## 10     299000        1148   78872.
+## # ... with 317 more rows</code></pre>
+</div>
+<div id="unnest-list-of-dataframes-to-plot-resids" class="section level2">
+<h2><code>unnest</code> list of dataframes to plot resids</h2>
+<pre class="r"><code>resids &lt;- unnest(home_sales_fix_models, data)
+resids %&gt;% 
+  ggplot(aes(square_feet, resid)) +
+  geom_line(aes(group = location, color=location), alpha = 1 / 3) +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/unnest_resids-1.png" width="576" /></p>
+</div>
+<div id="or-facet-by-location" class="section level2">
+<h2>Or facet by location</h2>
+<pre class="r"><code>resids %&gt;% 
+  ggplot(aes(square_feet, resid, color = location)) +
+  geom_line(alpha = 1 / 3) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/resids_facet_fix-1.png" width="576" /></p>
+</div>
+<div id="pipe-it-all-together" class="section level2">
+<h2>Pipe it all together!</h2>
+<pre class="r"><code>home_sales %&gt;% # Original dataset for Rifle with errors!
+  nest(-location) %&gt;% 
+  mutate(models = map(data, ~lm(sale_price ~ square_feet, .))) %&gt;%
+  mutate(data = map2(data, models, add_residuals)) %&gt;%
+  unnest(data) %&gt;% 
+  ggplot(aes(square_feet, resid, color = location)) +
+  geom_line(alpha = 1 / 3) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-02-02-multiple-linear-models-with-purrr-and-broom_files/figure-html/resids%20facet-1.png" width="576" /></p>
+</div>

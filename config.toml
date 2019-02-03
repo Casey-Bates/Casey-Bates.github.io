@@ -3,7 +3,7 @@ title = "Lost in the tidyverse"
 author = "Casey Bates"
 canonifyurls = true
 languagecode = "en"
-theme = "hugo-tanka"
+theme = "basics"
 
 googleAnalytics = ""
 disqusShortname = ""

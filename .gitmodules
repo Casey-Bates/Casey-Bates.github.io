@@ -1,3 +1,6 @@
 [submodule "themes/themes/hugo-tanka"]
 	path = themes/themes/hugo-tanka
 	url = https://github.com/road2stat/hugo-tanka.git
+[submodule "themes/themes/basics"]
+	path = themes/themes/basics
+	url = https://github.com/arjunkrishnababu96/basics.git

@@ -53,7 +53,7 @@
   </url>
   
   <url>
-    <loc>/</loc>
+    <loc>/categories/</loc>
     <priority>0</priority>
   </url>
   
@@ -114,6 +114,12 @@
   <url>
     <loc>/posts/</loc>
     <lastmod>2018-12-24T12:29:41+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2019-02-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

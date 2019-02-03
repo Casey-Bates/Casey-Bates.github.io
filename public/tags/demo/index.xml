@@ -5,8 +5,7 @@
     <link>/tags/demo/</link>
     <description>Recent content in Demo on Lost in the tidyverse</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <language>en</language>
     <lastBuildDate>Mon, 24 Dec 2018 12:29:41 +0800</lastBuildDate>
     
 	<atom:link href="/tags/demo/index.xml" rel="self" type="application/rss+xml" />
@@ -32,7 +31,7 @@ This theme has 3 CSS classes made for figure elements:
       <guid>/posts/post-with-featured-image/</guid>
       <description>Just define the image URL in the content’s front matter, the featured image will be displayed as the background.
 For example:
----images:-https://picsum.photos/1024/768/?random--- This is an array, you can set multiple urls, only the first url will be used. These images is also used in Twitter Cards and the Open Graph metadata.</description>
+--- images: - https://picsum.photos/1024/768/?random --- This is an array, you can set multiple urls, only the first url will be used. These images is also used in Twitter Cards and the Open Graph metadata.</description>
     </item>
     
     <item>

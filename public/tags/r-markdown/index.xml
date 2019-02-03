@@ -5,8 +5,7 @@
     <link>/tags/r-markdown/</link>
     <description>Recent content in R Markdown on Lost in the tidyverse</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <language>en</language>
     <lastBuildDate>Sat, 02 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
@@ -18,7 +17,9 @@
       <pubDate>Sat, 02 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/data-processing/</guid>
-      <description></description>
+      <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
+ Processing the data  Import two Excel files:
+single family home sales, and condo &amp;amp; townhome sales  Replace spaces in column names with underscore and make lowercase Rename some columns Add classification column to single_family dataset  Set all values to “Single Family”  Use bind_rows() to combine the datasets into one Remove “Garage Only” observations</description>
     </item>
     
     <item>

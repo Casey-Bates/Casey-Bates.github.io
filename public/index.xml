@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 03 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 03 Feb 2019 14:39:00 -0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Sun, 03 Feb 2019 14:39:00 -0700</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Casey Bates is a Senior Technical Consultant at ERM and an Instructor at DataCamp.</description>
+    </item>
     
     <item>
       <title>Data Cleaning and Exploration</title>
@@ -31,15 +40,6 @@ single family home sales, and condo &amp;amp; townhome sales  Replace spaces in 
       <guid>/post/fitting-models-with-purrr-and-broom/</guid>
       <description>Motivation Utilize tidyverse tools and the broom package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the Garfield County Assessor website that contains 2 years of data from summer 2014 through summer 2016.
  Outline  Part 1: Exploring the dataset with ggplot2  Tidying wide datasets with tidyr  Part 2: Many models with purrr and broom   Part 1: Exploring the dataset with ggplot2 Processing the data  Import two Excel files:</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
-      
-      <guid>/about/</guid>
-      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
     </item>
     
   </channel>

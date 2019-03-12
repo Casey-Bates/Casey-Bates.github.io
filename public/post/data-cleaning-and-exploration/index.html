@@ -9,28 +9,28 @@
 	<meta name="msapplication-TileColor" content="#494f5c">
 
 <meta itemprop="name" content="Data Cleaning and Exploration">
-<meta itemprop="description" content="Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
-# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &#39;%&lt;&gt;%&#39; pipe operator library(knitr) # For nicely formatted tables # Read-in townhomes and condo sales data townhomes &lt;- read_xlsx(&quot;2017-comparable-sales-condos-townhomes.">
+<meta itemprop="description" content="This blog post covers the steps taken to prepare two home sales data sets for analysis. If you’re only interested in fitting and visualizing multiple models with purrr and broom, skip ahead to that post.
+Processing the data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.">
 
 
 <meta itemprop="datePublished" content="2019-02-03T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-02-03T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2289">
+<meta itemprop="wordCount" content="1163">
 
 
 
 <meta itemprop="keywords" content="tidyverse,ggplot2,dplyr,data cleaning," />
 <meta property="og:title" content="Data Cleaning and Exploration" />
-<meta property="og:description" content="Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
-# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &#39;%&lt;&gt;%&#39; pipe operator library(knitr) # For nicely formatted tables # Read-in townhomes and condo sales data townhomes &lt;- read_xlsx(&quot;2017-comparable-sales-condos-townhomes." />
+<meta property="og:description" content="This blog post covers the steps taken to prepare two home sales data sets for analysis. If you’re only interested in fitting and visualizing multiple models with purrr and broom, skip ahead to that post.
+Processing the data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/post/data-cleaning-and-exploration/" />
 <meta property="article:published_time" content="2019-02-03T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2019-02-03T00:00:00&#43;00:00"/>
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Data Cleaning and Exploration"/>
-<meta name="twitter:description" content="Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
-# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &#39;%&lt;&gt;%&#39; pipe operator library(knitr) # For nicely formatted tables # Read-in townhomes and condo sales data townhomes &lt;- read_xlsx(&quot;2017-comparable-sales-condos-townhomes."/>
+<meta name="twitter:description" content="This blog post covers the steps taken to prepare two home sales data sets for analysis. If you’re only interested in fitting and visualizing multiple models with purrr and broom, skip ahead to that post.
+Processing the data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website."/>
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -58,7 +58,7 @@
 				</nav>
 			</div>
 			<div class="hdr-right hdr-icons">
-				<span class="hdr-social hide-in-mobile"><a href="https://linkedin.com/in/caseybates/" target="_blank" rel="noopener" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="https://github.com/Casey-Bates/" target="_blank" rel="noopener" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+				<span class="hdr-social hide-in-mobile"><a href="https://linkedin.com/in/caseybates/" target="_blank" rel="noopener" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="https://twitter.com/_casey_bates/" target="_blank" rel="noopener" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a><a href="https://github.com/Casey-Bates/" target="_blank" rel="noopener" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
 			</div>
 		</div>
 	</header>
@@ -76,9 +76,11 @@
 			
 
 
-<div id="data" class="section level2">
-<h2>Data</h2>
+<p>This blog post covers the steps taken to prepare two home sales data sets for analysis. If you’re only interested in fitting and visualizing multiple models with <code>purrr</code> and <code>broom</code>, skip ahead to that post.</p>
+<div id="processing-the-data" class="section level2">
+<h2>Processing the data</h2>
 <p>A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the <a href="https://www.garfield-county.com/assessor/comparable-sales.aspx">Garfield County Assessor website</a>.</p>
+<p>Load the required packages, read in the datasets, and take a glimpse at the <code>townhomes</code> data frame.</p>
 <pre class="r"><code># This chunk includes the data processing steps to wrangle and clean the data
 library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator
 library(readxl) # Tidyverse package for reading in Excel files
@@ -109,6 +111,8 @@ glimpse(townhomes) </code></pre>
 ## $ Baths                 &lt;dbl&gt; 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 2.00...
 ## $ `Heated Area`         &lt;dbl&gt; 621, 732, 792, 800, 864, 864, 891, 918, ...
 ## $ Legal                 &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 DESC:...</code></pre>
+<p>Column names will be cleaned up in a later step to make everything lower case and remove spaces. In this series of blog posts we will be evaluating how well square footage predicts sale price. Both sale price and “heated area” which represents liveable square footage are in numeric (double) format. This is a good start.</p>
+<p>Now to take a look at the single family homes data frame.</p>
 <pre class="r"><code>glimpse(single_family)</code></pre>
 <pre><code>## Observations: 1,369
 ## Variables: 13
@@ -125,26 +129,21 @@ glimpse(townhomes) </code></pre>
 ## $ Baths                 &lt;dbl&gt; 0.00, 1.00, 0.75, 1.00, 1.00, 1.00, 1.00...
 ## $ `Heated Area`         &lt;dbl&gt; 0, 480, 680, 710, 764, 804, 825, 957, 96...
 ## $ Legal                 &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 Subdi...</code></pre>
-<pre class="r"><code># &#39;sale_price&#39; column was coerced to numeric and special characters &#39;$&#39; and &#39;,&#39; removed
-
-# Replace spaces in column names with underscores (&#39;_&#39;) and make names lowercase
-# the package &#39;magrittr&#39; is used for the pipe operator, this is loaded with the &#39;tidyverse&#39; library
+<p>A nice feature of the <code>readxl</code> package is that the sale price column was coerced to numeric and the special characters ‘$’ and ’,’were removed. This saves us some effort. Now to clean up the column names.</p>
+<pre class="r"><code># Replace spaces in column names with underscores (&#39;_&#39;) and make names lowercase
+# the package &#39;magrittr&#39; is used for the pipe operator
 colnames(townhomes) %&lt;&gt;% str_replace_all(&quot;\\s&quot;, &quot;_&quot;) %&lt;&gt;% tolower() 
-colnames(single_family) %&lt;&gt;% str_replace_all(&quot;\\s&quot;, &quot;_&quot;) %&lt;&gt;% tolower()
-
-# Rename column &quot;actual_year_built&quot; as &quot;year_built&quot; for consistency between datasets
-townhomes &lt;- townhomes %&gt;% 
-  rename(year_built = actual_year_built) 
-
-# Add a &quot;classifcation&quot; column to the single_family dataset and set all values to &quot;Single Family&quot;
-single_family &lt;- single_family %&gt;% 
-  mutate(classification = &quot;Single Family&quot;)
-
-# bind_rows() throws an error b/c &#39;reception&#39; column is numeric in townhomes dataset; convert to character
-townhomes$reception &lt;- as.character(townhomes$reception)
-
-# Combine the datasets into one
-home_sales &lt;- bind_rows(single_family, townhomes)
+colnames(single_family) %&lt;&gt;% str_replace_all(&quot;\\s&quot;, &quot;_&quot;) %&lt;&gt;% tolower()</code></pre>
+<p>Rename column <code>actual_year_built</code> as <code>year_built</code> for consistency between datasets.</p>
+<pre class="r"><code>townhomes &lt;- townhomes %&gt;% 
+  rename(year_built = actual_year_built)</code></pre>
+<p>Add a <code>classifcation</code> column to the single_family dataset and set all values to “Single Family”.</p>
+<pre class="r"><code>single_family &lt;- single_family %&gt;% 
+  mutate(classification = &quot;Single Family&quot;)</code></pre>
+<p>bind_rows() throws an error b/c <code>reception</code> column is numeric in townhomes dataset; convert to character.</p>
+<pre class="r"><code>townhomes$reception &lt;- as.character(townhomes$reception)</code></pre>
+<p>Combine the datasets into one.</p>
+<pre class="r"><code>home_sales &lt;- bind_rows(single_family, townhomes)
 glimpse(home_sales)</code></pre>
 <pre><code>## Observations: 1,975
 ## Variables: 14
@@ -162,19 +161,17 @@ glimpse(home_sales)</code></pre>
 ## $ heated_area         &lt;dbl&gt; 0, 480, 680, 710, 764, 804, 825, 957, 960,...
 ## $ legal               &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 Subdivi...
 ## $ classification      &lt;chr&gt; &quot;Single Family&quot;, &quot;Single Family&quot;, &quot;Single ...</code></pre>
-<pre class="r"><code># No new columns were created during the &#39;bind_rows()&#39; process, indicating all colums align
-# Remove single_family and townhomes dataframes because they are no longer needed
-rm(single_family, townhomes)
-
-# unique(home_sales$classification) reveals a &quot;Garage Only&quot; type. Drop this.
-home_sales &lt;- home_sales %&gt;% filter(classification != &quot;Garage Only&quot;) 
-
-# Rename the column &quot;heated area&quot; to &quot;square_feet&quot; for clarity, though technically not correct
-home_sales &lt;- home_sales %&gt;% 
+<p>No new columns were created during the ‘bind_rows()’ process, indicating all colums align. Remove single_family and townhomes dataframes because they are no longer needed.</p>
+<pre class="r"><code>rm(single_family, townhomes)</code></pre>
+<p><code>unique(home_sales$classification)</code> reveals a “Garage Only” type. Drop this.</p>
+<pre class="r"><code>home_sales &lt;- home_sales %&gt;% filter(classification != &quot;Garage Only&quot;) </code></pre>
+<p>Rename the column <code>heated_area</code> to <code>square_feet</code> for clarity, though technically not correct</p>
+<pre class="r"><code>home_sales &lt;- home_sales %&gt;% 
   rename(square_feet = heated_area)</code></pre>
 </div>
-<div id="processing-the-data" class="section level2">
-<h2>Processing the data</h2>
+<div id="processing-the-data---recap" class="section level2">
+<h2>Processing the data - recap</h2>
+<p>To recap, this roughly covers the data cleaning steps taken above:</p>
 <ul>
 <li><p>Import two Excel files:</p>
 <ol style="list-style-type: decimal">
@@ -190,9 +187,10 @@ home_sales &lt;- home_sales %&gt;%
 <li>Use <code>bind_rows()</code> to combine the datasets into one</li>
 <li><p>Remove “Garage Only” observations</p></li>
 </ul>
+<p>No two datasets are alike. Each dataset is messy in its own way. The cleaning steps above are pretty typical. The only way of the steps required to clean a dataset is by jumping in and exploring the data!</p>
 </div>
-<div id="glimpse-of-the-data" class="section level2">
-<h2>Glimpse of the data</h2>
+<div id="glimpse-of-final-dataset" class="section level2">
+<h2>Glimpse of final dataset</h2>
 <pre class="r"><code>glimpse(home_sales)</code></pre>
 <pre><code>## Observations: 1,967
 ## Variables: 14
@@ -210,237 +208,6 @@ home_sales &lt;- home_sales %&gt;%
 ## $ square_feet         &lt;dbl&gt; 0, 480, 680, 710, 764, 804, 825, 957, 960,...
 ## $ legal               &lt;chr&gt; &quot;Section: 34 Township: 7 Range: 88 Subdivi...
 ## $ classification      &lt;chr&gt; &quot;Single Family&quot;, &quot;Single Family&quot;, &quot;Single ...</code></pre>
-</div>
-<div id="ggplot2-package-in-r" class="section level2">
-<h2><code>ggplot2</code> package in R</h2>
-<ul>
-<li>Created by Hadley Wickham</li>
-<li>Built on the “Grammar of Graphics” principles</li>
-<li>Core <strong>tidyverse</strong> package</li>
-<li>Every ggplot2 plot has 3 key components:
-<ul>
-<li><strong>Data</strong></li>
-<li><strong>Aesthetic mappings</strong> between variables and visuals</li>
-<li>Layer(s) to describe how to render each observation (usually created with a <strong>geom</strong> function)</li>
-</ul></li>
-</ul>
-</div>
-<div id="basic-scatterplot" class="section level2">
-<h2>Basic scatterplot</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
-  geom_point()</code></pre>
-<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_location-1.png" width="576" /></p>
-</div>
-<div id="transparency-and-color-by-location" class="section level2">
-<h2>Transparency and color by location</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_point(alpha = 0.5)</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_location_color-1.png" width="576" /></p>
-</div>
-<div id="zooming-into-sales-above-1m" class="section level2">
-<h2>Zooming into sales above $1M</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_zoom-1.png" width="576" /></p>
-</div>
-<div id="add-random-noise-with-jitter" class="section level2">
-<h2>Add random noise with jitter</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
-  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/scatter_zoom_jitter-1.png" width="576" /></p>
-</div>
-<div id="high-sale-price-observations" class="section level2">
-<h2>High sale price observations</h2>
-<pre class="r"><code>home_sales %&gt;% arrange(desc(sale_price)) %&gt;% select(c(&quot;sale_price&quot;, &quot;location&quot;, &quot;classification&quot;, &quot;bedrooms&quot;, &quot;square_feet&quot;)) %&gt;% head(30)</code></pre>
-<pre><code>## # A tibble: 30 x 5
-##    sale_price location   classification bedrooms square_feet
-##         &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;             &lt;dbl&gt;       &lt;dbl&gt;
-##  1    2800000 CARBONDALE Single Family         2         764
-##  2    2800000 CARBONDALE Single Family         2        3906
-##  3    2750000 CARBONDALE Single Family         0         680
-##  4    2750000 CARBONDALE Single Family         3        3648
-##  5    2200000 RIFLE      Townhome              3        1417
-##  6    2200000 RIFLE      Townhome              3        1417
-##  7    2200000 RIFLE      Townhome              3        1417
-##  8    2200000 RIFLE      Townhome              3        1417
-##  9    2200000 RIFLE      Townhome              3        1417
-## 10    2200000 RIFLE      Townhome              3        1417
-## # ... with 20 more rows</code></pre>
-</div>
-<div id="remove-erroneous-high-sale-price-observations" class="section level2">
-<h2>Remove erroneous high sale price observations</h2>
-<pre class="r"><code>home_sales_fix &lt;- home_sales %&gt;% filter(location != &quot;RIFLE&quot; | classification != &quot;Townhome&quot; | sale_price != 2200000)
-home_sales_fix %&gt;% filter(location == &quot;RIFLE&quot; &amp; classification == &quot;Townhome&quot;) %&gt;% arrange(desc(sale_price)) %&gt;% head(10)</code></pre>
-<pre><code>## # A tibble: 10 x 14
-##    account parcel_number reception sale_date sale_price situs_address
-##    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        
-##  1 R009182 217710207012  873859    2/17/2016     285000 001471 FIR CT
-##  2 R009185 217710207015  863141    5/22/2015     249000 001485 FIR CT
-##  3 R083245 217704359004  877783    5/27/2016     199500 846 W 24TH ST
-##  4 R083237 217704358001  878258    6/10/2016     199000 820 W 24TH ST
-##  5 R083241 217704358005  876194    4/20/2016     199000 828 W 24TH ST
-##  6 R083242 217704359001  877203    5/13/2016     199000 840 W 24TH ST
-##  7 R044597 217704351005  878910    6/24/2016     199000 000718 W 24T…
-##  8 R009189 217710207019  862189    4/30/2015     196500 001498 FIR CT
-##  9 R083243 217704359002  878983    6/28/2016     195000 842 W 24TH ST
-## 10 R083244 217704359003  878120    6/7/2016      195000 844 W 24TH ST
-## # ... with 8 more variables: location &lt;chr&gt;, architectural_style &lt;chr&gt;,
-## #   year_built &lt;dbl&gt;, bedrooms &lt;dbl&gt;, baths &lt;dbl&gt;, square_feet &lt;dbl&gt;,
-## #   legal &lt;chr&gt;, classification &lt;chr&gt;</code></pre>
-</div>
-<div id="linear-model-sale-price-vs.square-ft." class="section level2">
-<h2>Linear model: sale price vs. square ft.</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
-  geom_point() + 
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_bw-1.png" width="576" /></p>
-</div>
-<div id="linear-model-sale-price-vs.square-ft.-1" class="section level2">
-<h2>Linear model: sale price vs. square ft.</h2>
-<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
-  geom_point() + 
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_fixbw-1.png" width="576" /></p>
-</div>
-<div id="linear-model-sale-price-vs.square-feet" class="section level2">
-<h2>Linear model: sale price vs. square feet</h2>
-<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
-  geom_point() + 
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall-1.png" width="576" /></p>
-</div>
-<div id="linear-model-with-errors-removed" class="section level2">
-<h2>Linear model with errors removed</h2>
-<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
-  geom_point() + 
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_overall_fix-1.png" width="576" /></p>
-</div>
-<div id="linear-model-facetted-by-location" class="section level2">
-<h2>Linear model facetted by location</h2>
-<pre class="r"><code>ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
-  facet_wrap(~ location)</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_facet-1.png" width="576" /></p>
-</div>
-<div id="linear-model-facetted-by-location-1" class="section level2">
-<h2>Linear model facetted by location</h2>
-<pre class="r"><code>ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
-  facet_wrap(~ location)</code></pre>
-<p><img src="/post/2019-02-03-data-cleaning-and-exploration_files/figure-html/lm_facet_fix-1.png" width="576" /></p>
-</div>
-<div id="import-seattle-rain-gauge-dataset" class="section level1">
-<h1>Import seattle rain gauge dataset</h1>
-<pre class="r"><code>seattle_rain &lt;- read_csv(&quot;Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv&quot;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   Date = col_character(),
-##   RG01 = col_double(),
-##   RG02 = col_double(),
-##   RG03 = col_double(),
-##   RG04 = col_double(),
-##   RG05 = col_double(),
-##   RG07 = col_double(),
-##   RG08 = col_double(),
-##   RG09 = col_double(),
-##   RG10_30 = col_double(),
-##   RG11 = col_double(),
-##   RG12 = col_double(),
-##   RG14 = col_double(),
-##   RG15 = col_double(),
-##   RG16 = col_double(),
-##   RG17 = col_double(),
-##   RG18 = col_double(),
-##   RG20_25 = col_double()
-## )</code></pre>
-<div id="tidying-wide-datasets" class="section level2">
-<h2>Tidying wide datasets</h2>
-<pre class="r"><code>seattle_rain # Display Monthly Rain Gauge Accumulations for Seattle</code></pre>
-<pre><code>## # A tibble: 175 x 18
-##    Date   RG01  RG02  RG03  RG04  RG05  RG07  RG08  RG09 RG10_30  RG11
-##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
-##  1 11/3…  2.43  3.36 2.88   2.48 0.78   2.49 2.57   2.93    3.25  2.38
-##  2 12/3…  4.31  1.4  5.46   4.8  1.99   5.06 2.48   2.35    6.48  4.95
-##  3 01/3…  6.55  7.35 5.84   6.48 7.57   4.47 7.39   7.31    5.42  6.58
-##  4 02/2…  1.61  1.81 1.7    1.49 1.11   1.5  1.56   1.73    1.18  1.37
-##  5 03/3…  5.01  5.88 3.12   5.01 5.09   5.15 5.14   5.01    5.68  4.01
-##  6 04/3…  2.27  3.15 2.69   2.56 2.2    2.49 2.5    1.45    1.78  2.34
-##  7 05/3…  0.91  1.49 1.51   1.4  0.43   1.59 0.98   0.93    0.83  1.45
-##  8 06/3…  0.49  0.89 0.4    0.34 0.570  0.94 0.75   0.79    0.33  0.82
-##  9 07/3…  0.12  0.18 0.16   0.51 0.17   0.89 0.21   0.06    0.14  0.2 
-## 10 08/3…  0.33  0.46 0.290  0.26 0.37   1.33 0.570  0.22    0.68  0.3 
-## # ... with 165 more rows, and 7 more variables: RG12 &lt;dbl&gt;, RG14 &lt;dbl&gt;,
-## #   RG15 &lt;dbl&gt;, RG16 &lt;dbl&gt;, RG17 &lt;dbl&gt;, RG18 &lt;dbl&gt;, RG20_25 &lt;dbl&gt;</code></pre>
-</div>
-<div id="gather-columns-rg01-through-rg20_25" class="section level2">
-<h2><code>gather</code> columns <code>RG01</code> through <code>RG20_25</code></h2>
-<pre class="r"><code>library(tidyr) 
-seattle_rain_tall &lt;- seattle_rain %&gt;% 
-  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
-seattle_rain_tall</code></pre>
-<pre><code>## # A tibble: 2,975 x 3
-##    Date       rain_gauge precip_inches
-##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
-##  1 11/30/2002 RG01                2.43
-##  2 12/31/2002 RG01                4.31
-##  3 01/31/2003 RG01                6.55
-##  4 02/28/2003 RG01                1.61
-##  5 03/31/2003 RG01                5.01
-##  6 04/30/2003 RG01                2.27
-##  7 05/31/2003 RG01                0.91
-##  8 06/30/2003 RG01                0.49
-##  9 07/31/2003 RG01                0.12
-## 10 08/31/2003 RG01                0.33
-## # ... with 2,965 more rows</code></pre>
-</div>
-<div id="gather-all-columns-except-date" class="section level2">
-<h2><code>gather</code> all columns <em>except</em> <code>Date</code></h2>
-<pre class="r"><code>library(tidyr) 
-seattle_rain_tall &lt;- seattle_rain %&gt;% 
-  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
-seattle_rain_tall </code></pre>
-<pre><code>## # A tibble: 2,975 x 3
-##    Date       rain_gauge precip_inches
-##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
-##  1 11/30/2002 RG01                2.43
-##  2 12/31/2002 RG01                4.31
-##  3 01/31/2003 RG01                6.55
-##  4 02/28/2003 RG01                1.61
-##  5 03/31/2003 RG01                5.01
-##  6 04/30/2003 RG01                2.27
-##  7 05/31/2003 RG01                0.91
-##  8 06/30/2003 RG01                0.49
-##  9 07/31/2003 RG01                0.12
-## 10 08/31/2003 RG01                0.33
-## # ... with 2,965 more rows</code></pre>
-</div>
-<div id="gathering-in-sql" class="section level2">
-<h2>Gathering in SQL</h2>
-<pre class="sql"><code>SELECT date, &#39;rg01&#39; as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
-SELECT date, &#39;rg02&#39; as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg03&#39; as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg04&#39; as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg05&#39; as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg07&#39; as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg08&#39; as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg09&#39; as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg10_30&#39; as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg11&#39; as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg12&#39; as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg14&#39; as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg15&#39; as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg16&#39; as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg17&#39; as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg18&#39; as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
-SELECT date, &#39;rg20_25&#39; as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
-ORDER BY rain_gauge, date;</code></pre>
-</div>
 </div>
 
 		</div>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+
+<meta itemprop="name" content="ggplots for exploratory data analysis">
+<meta itemprop="description" content="ggplot2 package in R  Created by Hadley Wickham Built on the “Grammar of Graphics” principles Core tidyverse package Every ggplot2 plot has 3 key components:  Data Aesthetic mappings between variables and visuals Layer(s) to describe how to render each observation (usually created with a geom function)    Basic scatterplot ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) &#43; geom_point() ## Warning: Removed 1 rows containing missing values (geom_point).">
+
+
+<meta itemprop="datePublished" content="2019-03-12T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-03-12T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="640">
+
+
+
+<meta itemprop="keywords" content="ggplot2,linear regression,tidyverse,data visualization," />
+<meta property="og:title" content="ggplots for exploratory data analysis" />
+<meta property="og:description" content="ggplot2 package in R  Created by Hadley Wickham Built on the “Grammar of Graphics” principles Core tidyverse package Every ggplot2 plot has 3 key components:  Data Aesthetic mappings between variables and visuals Layer(s) to describe how to render each observation (usually created with a geom function)    Basic scatterplot ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) &#43; geom_point() ## Warning: Removed 1 rows containing missing values (geom_point)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/post/ggplots-for-exploratory-data-analysis/" />
+<meta property="article:published_time" content="2019-03-12T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-03-12T00:00:00&#43;00:00"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ggplots for exploratory data analysis"/>
+<meta name="twitter:description" content="ggplot2 package in R  Created by Hadley Wickham Built on the “Grammar of Graphics” principles Core tidyverse package Every ggplot2 plot has 3 key components:  Data Aesthetic mappings between variables and visuals Layer(s) to describe how to render each observation (usually created with a geom function)    Basic scatterplot ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) &#43; geom_point() ## Warning: Removed 1 rows containing missing values (geom_point)."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>ggplots for exploratory data analysis</title>
+	<link rel="stylesheet" href="/css/style.min.e17a25802a5bbec7b5c368fdf0e55ed331a31cadbc95c1c0e7be9e9cf889b8fb.css" integrity="sha256-4XolgCpbvse1w2j98OVe0zGjHK28lcHA576enPiJuPs=">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="/">Lost in the tidyverse</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="/post/">Posts</a>
+					<a href="/about/">About</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://linkedin.com/in/caseybates/" target="_blank" rel="noopener" title="Linkedin"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a><a href="https://twitter.com/_casey_bates/" target="_blank" rel="noopener" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a><a href="https://github.com/Casey-Bates/" target="_blank" rel="noopener" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="/post/">Posts</a></li>
+			<li><a href="/about/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner thin animated fadeIn faster">
+		<h1>ggplots for exploratory data analysis</h1>
+		<div class="content">
+			
+
+
+<div id="ggplot2-package-in-r" class="section level2">
+<h2><code>ggplot2</code> package in R</h2>
+<ul>
+<li>Created by Hadley Wickham</li>
+<li>Built on the “Grammar of Graphics” principles</li>
+<li>Core <strong>tidyverse</strong> package</li>
+<li>Every ggplot2 plot has 3 key components:
+<ul>
+<li><strong>Data</strong></li>
+<li><strong>Aesthetic mappings</strong> between variables and visuals</li>
+<li>Layer(s) to describe how to render each observation (usually created with a <strong>geom</strong> function)</li>
+</ul></li>
+</ul>
+</div>
+<div id="basic-scatterplot" class="section level2">
+<h2>Basic scatterplot</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
+  geom_point()</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_location-1.png" width="672" /></p>
+</div>
+<div id="transparency-and-color-by-location" class="section level2">
+<h2>Transparency and color by location</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_location_color-1.png" width="672" /></p>
+</div>
+<div id="zooming-into-sales-above-1m" class="section level2">
+<h2>Zooming into sales above $1M</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_zoom-1.png" width="672" /></p>
+</div>
+<div id="add-random-noise-with-jitter" class="section level2">
+<h2>Add random noise with jitter</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_zoom_jitter-1.png" width="672" /></p>
+</div>
+<div id="high-sale-price-observations" class="section level2">
+<h2>High sale price observations</h2>
+<pre class="r"><code>home_sales %&gt;% arrange(desc(sale_price)) %&gt;% select(c(&quot;sale_price&quot;, &quot;location&quot;, &quot;classification&quot;, &quot;bedrooms&quot;, &quot;square_feet&quot;)) %&gt;% head(30)</code></pre>
+<pre><code>## # A tibble: 30 x 5
+##    sale_price location   classification bedrooms square_feet
+##         &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;             &lt;dbl&gt;       &lt;dbl&gt;
+##  1    2800000 CARBONDALE Single Family         2         764
+##  2    2800000 CARBONDALE Single Family         2        3906
+##  3    2750000 CARBONDALE Single Family         0         680
+##  4    2750000 CARBONDALE Single Family         3        3648
+##  5    2200000 RIFLE      Townhome              3        1417
+##  6    2200000 RIFLE      Townhome              3        1417
+##  7    2200000 RIFLE      Townhome              3        1417
+##  8    2200000 RIFLE      Townhome              3        1417
+##  9    2200000 RIFLE      Townhome              3        1417
+## 10    2200000 RIFLE      Townhome              3        1417
+## # ... with 20 more rows</code></pre>
+</div>
+<div id="remove-erroneous-high-sale-price-observations" class="section level2">
+<h2>Remove erroneous high sale price observations</h2>
+<pre class="r"><code>home_sales_fix &lt;- home_sales %&gt;% filter(location != &quot;RIFLE&quot; | classification != &quot;Townhome&quot; | sale_price != 2200000)
+home_sales_fix %&gt;% filter(location == &quot;RIFLE&quot; &amp; classification == &quot;Townhome&quot;) %&gt;% arrange(desc(sale_price)) %&gt;% head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 14
+##    account parcel_number reception sale_date sale_price situs_address
+##    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        
+##  1 R009182 217710207012  873859    2/17/2016     285000 001471 FIR CT
+##  2 R009185 217710207015  863141    5/22/2015     249000 001485 FIR CT
+##  3 R083245 217704359004  877783    5/27/2016     199500 846 W 24TH ST
+##  4 R083237 217704358001  878258    6/10/2016     199000 820 W 24TH ST
+##  5 R083241 217704358005  876194    4/20/2016     199000 828 W 24TH ST
+##  6 R083242 217704359001  877203    5/13/2016     199000 840 W 24TH ST
+##  7 R044597 217704351005  878910    6/24/2016     199000 000718 W 24T…
+##  8 R009189 217710207019  862189    4/30/2015     196500 001498 FIR CT
+##  9 R083243 217704359002  878983    6/28/2016     195000 842 W 24TH ST
+## 10 R083244 217704359003  878120    6/7/2016      195000 844 W 24TH ST
+## # ... with 8 more variables: location &lt;chr&gt;, architectural_style &lt;chr&gt;,
+## #   year_built &lt;dbl&gt;, bedrooms &lt;dbl&gt;, baths &lt;dbl&gt;, square_feet &lt;dbl&gt;,
+## #   legal &lt;chr&gt;, classification &lt;chr&gt;</code></pre>
+</div>
+<div id="linear-model-sale-price-vs.square-ft." class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_bw-1.png" width="672" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft.-1" class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_fixbw-1.png" width="672" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-feet" class="section level2">
+<h2>Linear model: sale price vs. square feet</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall-1.png" width="672" /></p>
+</div>
+<div id="linear-model-with-errors-removed" class="section level2">
+<h2>Linear model with errors removed</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_fix-1.png" width="672" /></p>
+</div>
+<div id="linear-model-facetted-by-location" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_facet-1.png" width="672" /></p>
+</div>
+<div id="linear-model-facetted-by-location-1" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_facet_fix-1.png" width="672" /></p>
+</div>
+
+		</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2019 <a href="/">Casey Bates</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="/js/main.min.8f39f24808e9d0a9b02da58c2d2838da859dc0b7bdfadbdb1883aae8b6adacfe.js" integrity="sha256-jznySAjp0KmwLaWMLSg42oWdwLe9+tvbGIOq6LatrP4="></script>
+
+</body>
+
+</html>

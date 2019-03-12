@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Data Visualization on Lost in the tidyverse</title>
+    <link>/tags/data-visualization/</link>
+    <description>Recent content in Data Visualization on Lost in the tidyverse</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
+    <lastBuildDate>Tue, 12 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/data-visualization/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ggplots for exploratory data analysis</title>
+      <link>/post/ggplots-for-exploratory-data-analysis/</link>
+      <pubDate>Tue, 12 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/ggplots-for-exploratory-data-analysis/</guid>
+      <description>ggplot2 package in R  Created by Hadley Wickham Built on the “Grammar of Graphics” principles Core tidyverse package Every ggplot2 plot has 3 key components:  Data Aesthetic mappings between variables and visuals Layer(s) to describe how to render each observation (usually created with a geom function)    Basic scatterplot ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + geom_point() ## Warning: Removed 1 rows containing missing values (geom_point).</description>
+    </item>
+    
+  </channel>
+</rss>

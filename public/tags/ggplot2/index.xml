@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 03 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 12 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/ggplot2/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ggplots for exploratory data analysis</title>
+      <link>/post/ggplots-for-exploratory-data-analysis/</link>
+      <pubDate>Tue, 12 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/ggplots-for-exploratory-data-analysis/</guid>
+      <description>ggplot2 package in R  Created by Hadley Wickham Built on the “Grammar of Graphics” principles Core tidyverse package Every ggplot2 plot has 3 key components:  Data Aesthetic mappings between variables and visuals Layer(s) to describe how to render each observation (usually created with a geom function)    Basic scatterplot ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + geom_point() ## Warning: Removed 1 rows containing missing values (geom_point).</description>
+    </item>
     
     <item>
       <title>Data Cleaning and Exploration</title>
@@ -18,8 +27,8 @@
       <pubDate>Sun, 03 Feb 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/data-cleaning-and-exploration/</guid>
-      <description>Data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.
-# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &amp;#39;%&amp;lt;&amp;gt;%&amp;#39; pipe operator library(knitr) # For nicely formatted tables # Read-in townhomes and condo sales data townhomes &amp;lt;- read_xlsx(&amp;quot;2017-comparable-sales-condos-townhomes.</description>
+      <description>This blog post covers the steps taken to prepare two home sales data sets for analysis. If you’re only interested in fitting and visualizing multiple models with purrr and broom, skip ahead to that post.
+Processing the data A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the Garfield County Assessor website.</description>
     </item>
     
     <item>
@@ -29,7 +38,7 @@
       
       <guid>/post/fitting-models-with-purrr-and-broom/</guid>
       <description>Motivation Utilize tidyverse tools and the broom package to generate numerous linear models to evaluate how well sale price is explained by square footage for home sales in Garfield County, Colorado. A dataset is publically available on the Garfield County Assessor website that contains 2 years of data from summer 2014 through summer 2016.
-# This chunk includes the data processing steps to wrangle and clean the data library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator library(readxl) # Tidyverse package for reading in Excel files library(magrittr) # For the &amp;#39;%&amp;lt;&amp;gt;%&amp;#39; pipe operator # Read-in townhomes and condo sales data townhomes &amp;lt;- read_xlsx(&amp;quot;2017-comparable-sales-condos-townhomes.</description>
+ Processing the data See the first blog post for all steps taken to clean the data.</description>
     </item>
     
   </channel>

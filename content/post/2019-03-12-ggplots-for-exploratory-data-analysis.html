@@ -1,0 +1,142 @@
+---
+title: ggplots for exploratory data analysis
+author: Casey Bates
+date: '2019-03-12'
+slug: ggplots-for-exploratory-data-analysis
+categories:
+  - R
+tags:
+  - ggplot2
+  - linear regression
+  - tidyverse
+  - data visualization
+comments: no
+images: ~
+---
+
+
+
+<div id="ggplot2-package-in-r" class="section level2">
+<h2><code>ggplot2</code> package in R</h2>
+<ul>
+<li>Created by Hadley Wickham</li>
+<li>Built on the “Grammar of Graphics” principles</li>
+<li>Core <strong>tidyverse</strong> package</li>
+<li>Every ggplot2 plot has 3 key components:
+<ul>
+<li><strong>Data</strong></li>
+<li><strong>Aesthetic mappings</strong> between variables and visuals</li>
+<li>Layer(s) to describe how to render each observation (usually created with a <strong>geom</strong> function)</li>
+</ul></li>
+</ul>
+</div>
+<div id="basic-scatterplot" class="section level2">
+<h2>Basic scatterplot</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
+  geom_point()</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_location-1.png" width="672" /></p>
+</div>
+<div id="transparency-and-color-by-location" class="section level2">
+<h2>Transparency and color by location</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_location_color-1.png" width="672" /></p>
+</div>
+<div id="zooming-into-sales-above-1m" class="section level2">
+<h2>Zooming into sales above $1M</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_zoom-1.png" width="672" /></p>
+</div>
+<div id="add-random-noise-with-jitter" class="section level2">
+<h2>Add random noise with jitter</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
+  coord_cartesian(ylim = c(1000000, 3000000))</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/scatter_zoom_jitter-1.png" width="672" /></p>
+</div>
+<div id="high-sale-price-observations" class="section level2">
+<h2>High sale price observations</h2>
+<pre class="r"><code>home_sales %&gt;% arrange(desc(sale_price)) %&gt;% select(c(&quot;sale_price&quot;, &quot;location&quot;, &quot;classification&quot;, &quot;bedrooms&quot;, &quot;square_feet&quot;)) %&gt;% head(30)</code></pre>
+<pre><code>## # A tibble: 30 x 5
+##    sale_price location   classification bedrooms square_feet
+##         &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;             &lt;dbl&gt;       &lt;dbl&gt;
+##  1    2800000 CARBONDALE Single Family         2         764
+##  2    2800000 CARBONDALE Single Family         2        3906
+##  3    2750000 CARBONDALE Single Family         0         680
+##  4    2750000 CARBONDALE Single Family         3        3648
+##  5    2200000 RIFLE      Townhome              3        1417
+##  6    2200000 RIFLE      Townhome              3        1417
+##  7    2200000 RIFLE      Townhome              3        1417
+##  8    2200000 RIFLE      Townhome              3        1417
+##  9    2200000 RIFLE      Townhome              3        1417
+## 10    2200000 RIFLE      Townhome              3        1417
+## # ... with 20 more rows</code></pre>
+</div>
+<div id="remove-erroneous-high-sale-price-observations" class="section level2">
+<h2>Remove erroneous high sale price observations</h2>
+<pre class="r"><code>home_sales_fix &lt;- home_sales %&gt;% filter(location != &quot;RIFLE&quot; | classification != &quot;Townhome&quot; | sale_price != 2200000)
+home_sales_fix %&gt;% filter(location == &quot;RIFLE&quot; &amp; classification == &quot;Townhome&quot;) %&gt;% arrange(desc(sale_price)) %&gt;% head(10)</code></pre>
+<pre><code>## # A tibble: 10 x 14
+##    account parcel_number reception sale_date sale_price situs_address
+##    &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        
+##  1 R009182 217710207012  873859    2/17/2016     285000 001471 FIR CT
+##  2 R009185 217710207015  863141    5/22/2015     249000 001485 FIR CT
+##  3 R083245 217704359004  877783    5/27/2016     199500 846 W 24TH ST
+##  4 R083237 217704358001  878258    6/10/2016     199000 820 W 24TH ST
+##  5 R083241 217704358005  876194    4/20/2016     199000 828 W 24TH ST
+##  6 R083242 217704359001  877203    5/13/2016     199000 840 W 24TH ST
+##  7 R044597 217704351005  878910    6/24/2016     199000 000718 W 24T…
+##  8 R009189 217710207019  862189    4/30/2015     196500 001498 FIR CT
+##  9 R083243 217704359002  878983    6/28/2016     195000 842 W 24TH ST
+## 10 R083244 217704359003  878120    6/7/2016      195000 844 W 24TH ST
+## # ... with 8 more variables: location &lt;chr&gt;, architectural_style &lt;chr&gt;,
+## #   year_built &lt;dbl&gt;, bedrooms &lt;dbl&gt;, baths &lt;dbl&gt;, square_feet &lt;dbl&gt;,
+## #   legal &lt;chr&gt;, classification &lt;chr&gt;</code></pre>
+</div>
+<div id="linear-model-sale-price-vs.square-ft." class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_bw-1.png" width="672" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-ft.-1" class="section level2">
+<h2>Linear model: sale price vs. square ft.</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_fixbw-1.png" width="672" /></p>
+</div>
+<div id="linear-model-sale-price-vs.square-feet" class="section level2">
+<h2>Linear model: sale price vs. square feet</h2>
+<pre class="r"><code>ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall-1.png" width="672" /></p>
+</div>
+<div id="linear-model-with-errors-removed" class="section level2">
+<h2>Linear model with errors removed</h2>
+<pre class="r"><code>ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) # Method set to lm for the linear model</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_overall_fix-1.png" width="672" /></p>
+</div>
+<div id="linear-model-facetted-by-location" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_facet-1.png" width="672" /></p>
+</div>
+<div id="linear-model-facetted-by-location-1" class="section level2">
+<h2>Linear model facetted by location</h2>
+<pre class="r"><code>ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_wrap(~ location)</code></pre>
+<p><img src="/post/2019-03-12-ggplots-for-exploratory-data-analysis_files/figure-html/lm_facet_fix-1.png" width="672" /></p>
+</div>

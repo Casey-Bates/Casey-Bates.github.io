@@ -17,6 +17,7 @@ images: ~
 
 ## Import seattle rain gauge dataset
 ```{r seattle_rain}
+library(tidyverse)
 seattle_rain <- read_csv("Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv")
 ```
 

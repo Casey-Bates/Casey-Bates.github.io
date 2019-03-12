@@ -1,0 +1,135 @@
+---
+title: Using the tidyverse tidyr package to make wide datasets tall
+author: Casey Bates
+date: '2019-03-12'
+slug: using-the-tidyverse-tidyr-package-to-make-wide-datasets-tall
+categories:
+  - R
+tags:
+  - tidyverse
+  - tidyr
+  - sql
+  - data transformation
+  - gather
+comments: no
+images: ~
+---
+
+
+
+<div id="import-seattle-rain-gauge-dataset" class="section level2">
+<h2>Import seattle rain gauge dataset</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
+## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
+## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>seattle_rain &lt;- read_csv(&quot;Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   Date = col_character(),
+##   RG01 = col_double(),
+##   RG02 = col_double(),
+##   RG03 = col_double(),
+##   RG04 = col_double(),
+##   RG05 = col_double(),
+##   RG07 = col_double(),
+##   RG08 = col_double(),
+##   RG09 = col_double(),
+##   RG10_30 = col_double(),
+##   RG11 = col_double(),
+##   RG12 = col_double(),
+##   RG14 = col_double(),
+##   RG15 = col_double(),
+##   RG16 = col_double(),
+##   RG17 = col_double(),
+##   RG18 = col_double(),
+##   RG20_25 = col_double()
+## )</code></pre>
+</div>
+<div id="display-monthly-rain-gauge-accumulations-for-seattle" class="section level2">
+<h2>Display Monthly Rain Gauge Accumulations for Seattle</h2>
+<pre class="r"><code>seattle_rain </code></pre>
+<pre><code>## # A tibble: 175 x 18
+##    Date   RG01  RG02  RG03  RG04  RG05  RG07  RG08  RG09 RG10_30  RG11
+##    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 11/3…  2.43  3.36 2.88   2.48 0.78   2.49 2.57   2.93    3.25  2.38
+##  2 12/3…  4.31  1.4  5.46   4.8  1.99   5.06 2.48   2.35    6.48  4.95
+##  3 01/3…  6.55  7.35 5.84   6.48 7.57   4.47 7.39   7.31    5.42  6.58
+##  4 02/2…  1.61  1.81 1.7    1.49 1.11   1.5  1.56   1.73    1.18  1.37
+##  5 03/3…  5.01  5.88 3.12   5.01 5.09   5.15 5.14   5.01    5.68  4.01
+##  6 04/3…  2.27  3.15 2.69   2.56 2.2    2.49 2.5    1.45    1.78  2.34
+##  7 05/3…  0.91  1.49 1.51   1.4  0.43   1.59 0.98   0.93    0.83  1.45
+##  8 06/3…  0.49  0.89 0.4    0.34 0.570  0.94 0.75   0.79    0.33  0.82
+##  9 07/3…  0.12  0.18 0.16   0.51 0.17   0.89 0.21   0.06    0.14  0.2 
+## 10 08/3…  0.33  0.46 0.290  0.26 0.37   1.33 0.570  0.22    0.68  0.3 
+## # ... with 165 more rows, and 7 more variables: RG12 &lt;dbl&gt;, RG14 &lt;dbl&gt;,
+## #   RG15 &lt;dbl&gt;, RG16 &lt;dbl&gt;, RG17 &lt;dbl&gt;, RG18 &lt;dbl&gt;, RG20_25 &lt;dbl&gt;</code></pre>
+</div>
+<div id="gather-columns-rg01-through-rg20_25" class="section level2">
+<h2><code>gather</code> columns <code>RG01</code> through <code>RG20_25</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
+seattle_rain_tall</code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gather-all-columns-except-date" class="section level2">
+<h2><code>gather</code> all columns <em>except</em> <code>Date</code></h2>
+<pre class="r"><code>library(tidyr) 
+seattle_rain_tall &lt;- seattle_rain %&gt;% 
+  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
+seattle_rain_tall </code></pre>
+<pre><code>## # A tibble: 2,975 x 3
+##    Date       rain_gauge precip_inches
+##    &lt;chr&gt;      &lt;chr&gt;              &lt;dbl&gt;
+##  1 11/30/2002 RG01                2.43
+##  2 12/31/2002 RG01                4.31
+##  3 01/31/2003 RG01                6.55
+##  4 02/28/2003 RG01                1.61
+##  5 03/31/2003 RG01                5.01
+##  6 04/30/2003 RG01                2.27
+##  7 05/31/2003 RG01                0.91
+##  8 06/30/2003 RG01                0.49
+##  9 07/31/2003 RG01                0.12
+## 10 08/31/2003 RG01                0.33
+## # ... with 2,965 more rows</code></pre>
+</div>
+<div id="gathering-in-sql" class="section level2">
+<h2>Gathering in SQL</h2>
+<pre class="sql"><code>SELECT date, &#39;rg01&#39; as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
+SELECT date, &#39;rg02&#39; as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg03&#39; as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg04&#39; as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg05&#39; as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg07&#39; as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg08&#39; as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg09&#39; as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg10_30&#39; as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg11&#39; as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg12&#39; as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg14&#39; as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg15&#39; as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg16&#39; as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg17&#39; as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg18&#39; as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
+SELECT date, &#39;rg20_25&#39; as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
+ORDER BY rain_gauge, date;</code></pre>
+</div>

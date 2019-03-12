@@ -15,11 +15,13 @@ categories: R
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width = 6, fig.height = 3.7)
 ```
+This blog post covers the steps taken to prepare two home sales data sets for analysis. If you're only interested in fitting and visualizing multiple models with `purrr` and `broom`, skip ahead to that post.
 
-## Data
+## Processing the data
 
 A single-family home sales dataset and a condo/townhome dataset for Garfield County, Colorado, that contain 2 years of data from summer 2014 through summer 2016. The data is publically available on the [Garfield County Assessor website](https://www.garfield-county.com/assessor/comparable-sales.aspx). 
 
+Load the required packages, read in the datasets, and take a glimpse at the `townhomes` data frame.
 ```{r data_processing, message=FALSE}
 # This chunk includes the data processing steps to wrangle and clean the data
 library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator
@@ -35,41 +37,57 @@ single_family <- read_xlsx("2017-comparable-sales-single-family.xlsx")
 
 # Check column names and formats
 glimpse(townhomes) 
-glimpse(single_family)
-# 'sale_price' column was coerced to numeric and special characters '$' and ',' removed
+```
+Column names will be cleaned up in a later step to make everything lower case and remove spaces. In this series of blog posts we will be evaluating how well square footage predicts sale price. Both sale price and "heated area" which represents liveable square footage are in numeric (double) format. This is a good start.
 
+Now to take a look at the single family homes data frame.
+```{r}
+glimpse(single_family)
+```
+A nice feature of the `readxl` package is that the sale price column was coerced to numeric and the special characters '$' and ','were removed. This saves us some effort. Now to clean up the column names.
+
+```{r}
 # Replace spaces in column names with underscores ('_') and make names lowercase
-# the package 'magrittr' is used for the pipe operator, this is loaded with the 'tidyverse' library
+# the package 'magrittr' is used for the pipe operator
 colnames(townhomes) %<>% str_replace_all("\\s", "_") %<>% tolower() 
 colnames(single_family) %<>% str_replace_all("\\s", "_") %<>% tolower()
-
-# Rename column "actual_year_built" as "year_built" for consistency between datasets
+```
+Rename column `actual_year_built` as `year_built` for consistency between datasets.
+```{r}
 townhomes <- townhomes %>% 
-  rename(year_built = actual_year_built) 
-
-# Add a "classifcation" column to the single_family dataset and set all values to "Single Family"
+  rename(year_built = actual_year_built)
+```
+Add a `classifcation` column to the single_family dataset and set all values to "Single Family".
+```{r}
 single_family <- single_family %>% 
   mutate(classification = "Single Family")
-
-# bind_rows() throws an error b/c 'reception' column is numeric in townhomes dataset; convert to character
+```
+bind_rows() throws an error b/c `reception` column is numeric in townhomes dataset; convert to character.
+```{r}
 townhomes$reception <- as.character(townhomes$reception)
-
-# Combine the datasets into one
+```
+Combine the datasets into one.
+```{r}
 home_sales <- bind_rows(single_family, townhomes)
 glimpse(home_sales)
-# No new columns were created during the 'bind_rows()' process, indicating all colums align
-# Remove single_family and townhomes dataframes because they are no longer needed
+```
+No new columns were created during the 'bind_rows()' process, indicating all colums align. Remove single_family and townhomes dataframes because they are no longer needed.
+```{r}
 rm(single_family, townhomes)
-
-# unique(home_sales$classification) reveals a "Garage Only" type. Drop this.
+```
+`unique(home_sales$classification)` reveals a "Garage Only" type. Drop this.
+```{r}
 home_sales <- home_sales %>% filter(classification != "Garage Only") 
-
-# Rename the column "heated area" to "square_feet" for clarity, though technically not correct
+```
+Rename the column `heated_area` to `square_feet` for clarity, though technically not correct
+```{r}
 home_sales <- home_sales %>% 
   rename(square_feet = heated_area)
 ```
 
-## Processing the data
+## Processing the data - recap
+
+To recap, this roughly covers the data cleaning steps taken above:
 
 * Import two Excel files: 
 
@@ -82,146 +100,11 @@ home_sales <- home_sales %>%
 * Use `bind_rows()` to combine the datasets into one
 * Remove "Garage Only" observations
 
+No two datasets are alike. Each dataset is messy in its own way. The cleaning steps above are pretty typical. The only way of the steps required to clean a dataset is by jumping in and exploring the data!
 
-## Glimpse of the data
+## Glimpse of final dataset
 ```{r glimpse}
 glimpse(home_sales)
 ```
 
-## `ggplot2` package in R
-* Created by Hadley Wickham
-* Built on the "Grammar of Graphics" principles
-* Core **tidyverse** package
-* Every ggplot2 plot has 3 key components:
-  * **Data**
-  * **Aesthetic mappings** between variables and visuals 
-  * Layer(s) to describe how to render each observation (usually created with a **geom** function)
 
-## Basic scatterplot
-```{r scatter_location}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
-  geom_point()
-```
-
-## Transparency and color by location
-```{r scatter_location_color, warning= FALSE}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_point(alpha = 0.5)
-```
-
-## Zooming into sales above $1M
-```{r scatter_zoom, warning= FALSE}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  coord_cartesian(ylim = c(1000000, 3000000))
-```
-
-## Add random noise with jitter
-```{r scatter_zoom_jitter, warning= FALSE}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
-  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
-  coord_cartesian(ylim = c(1000000, 3000000))
-```
-
-## High sale price observations
-```{r high_sale_price}
-home_sales %>% arrange(desc(sale_price)) %>% select(c("sale_price", "location", "classification", "bedrooms", "square_feet")) %>% head(30)
-```
-
-## Remove erroneous high sale price observations
-```{r remove_highs}
-home_sales_fix <- home_sales %>% filter(location != "RIFLE" | classification != "Townhome" | sale_price != 2200000)
-home_sales_fix %>% filter(location == "RIFLE" & classification == "Townhome") %>% arrange(desc(sale_price)) %>% head(10)
-```
-
-## Linear model: sale price vs. square ft.
-```{r lm_overall_bw, warning= FALSE}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
-```
-
-## Linear model: sale price vs. square ft.
-```{r lm_overall_fixbw, warning= FALSE}
-ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
-```
-
-## Linear model: sale price vs. square feet
-```{r lm_overall, warning= FALSE}
-ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
-```
-
-## Linear model with errors removed
-```{r lm_overall_fix, warning= FALSE}
-ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
-  geom_point() + 
-  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
-```
-
-## Linear model facetted by location
-```{r lm_facet, warning= FALSE}
-ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~ location)
-```
-
-## Linear model facetted by location
-```{r lm_facet_fix, warning= FALSE}
-ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE) +
-  facet_wrap(~ location)
-```
-
-# Import seattle rain gauge dataset
-```{r seattle_rain}
-seattle_rain <- read_csv("Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv")
-```
-
-## Tidying wide datasets
-```{r head_rain}
-seattle_rain # Display Monthly Rain Gauge Accumulations for Seattle
-```
-
-## `gather` columns `RG01` through `RG20_25`
-```{r seattle_rain_tall}
-library(tidyr) 
-seattle_rain_tall <- seattle_rain %>% 
-  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
-seattle_rain_tall
-```
-
-## `gather` all columns *except* `Date`
-```{r seattle_rain_tall_fix}
-library(tidyr) 
-seattle_rain_tall <- seattle_rain %>% 
-  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
-seattle_rain_tall 
-```
-
-## Gathering in SQL
-```{sql eval=FALSE}
-SELECT date, 'rg01' as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
-SELECT date, 'rg02' as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg03' as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg04' as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg05' as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg07' as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg08' as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg09' as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg10_30' as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg11' as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg12' as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg14' as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg15' as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg16' as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg17' as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg18' as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
-SELECT date, 'rg20_25' as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
-ORDER BY rain_gauge, date;
-```

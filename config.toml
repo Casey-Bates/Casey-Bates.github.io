@@ -57,9 +57,9 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     name = "linkedin"
     url = "https://linkedin.com/in/caseybates/"
 
- # [[params.social]]
-  #  name = "instagram"
-   # url = "https://instagram.com/"
+  [[params.social]]
+   name = "twitter"
+    url = "https://twitter.com/_casey_bates/"
 
   [[params.social]]
     name = "github"

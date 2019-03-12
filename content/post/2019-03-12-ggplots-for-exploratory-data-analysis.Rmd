@@ -1,0 +1,201 @@
+---
+title: ggplots for exploratory data analysis
+author: Casey Bates
+date: '2019-03-12'
+slug: ggplots-for-exploratory-data-analysis
+categories:
+  - R
+tags:
+  - ggplot2
+  - linear regression
+  - tidyverse
+  - data visualization
+comments: no
+images: ~
+---
+
+```{r data_processing, message=FALSE, include=FALSE}
+# This chunk includes the data processing steps to wrangle and clean the data
+library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator
+library(readxl) # Tidyverse package for reading in Excel files
+library(magrittr) # For the '%<>%' pipe operator
+
+# Read-in townhomes and condo sales data
+townhomes <- read_xlsx("2017-comparable-sales-condos-townhomes.xlsx") 
+
+# Read-in single family home sales data
+single_family <- read_xlsx("2017-comparable-sales-single-family.xlsx") 
+
+# Check column names and formats
+glimpse(townhomes) 
+glimpse(single_family)
+# 'sale_price' column was coerced to numeric and special characters '$' and ',' removed
+
+# Replace spaces in column names with underscores ('_') and make names lowercase
+# the package 'magrittr' is used for the pipe operator, this is loaded with the 'tidyverse' library
+colnames(townhomes) %<>% str_replace_all("\\s", "_") %<>% tolower() 
+colnames(single_family) %<>% str_replace_all("\\s", "_") %<>% tolower()
+
+# Rename column "actual_year_built" as "year_built" for consistency between datasets
+townhomes <- townhomes %>% 
+  rename(year_built = actual_year_built) 
+
+# Add a "classifcation" column to the single_family dataset and set all values to "Single Family"
+single_family <- single_family %>% 
+  mutate(classification = "Single Family")
+
+# bind_rows() throws an error b/c 'reception' column is numeric in townhomes dataset; convert to character
+townhomes$reception <- as.character(townhomes$reception)
+
+# Combine the datasets into one
+home_sales <- bind_rows(single_family, townhomes)
+glimpse(home_sales)
+# No new columns were created during the 'bind_rows()' process, indicating all colums align
+# Remove single_family and townhomes dataframes because they are no longer needed
+rm(single_family, townhomes)
+
+# unique(home_sales$classification) reveals a "Garage Only" type. Drop this.
+home_sales <- home_sales %>% filter(classification != "Garage Only") 
+
+# Rename the column "heated area" to "square_feet" for clarity, though technically not correct
+home_sales <- home_sales %>% 
+  rename(square_feet = heated_area)
+```
+```{r data_processing, message=FALSE, include=FALSE}
+# This chunk includes the data processing steps to wrangle and clean the data
+library(tidyverse) # For reading-in, wrangling, visualizing the data, and for pipe operator
+library(readxl) # Tidyverse package for reading in Excel files
+library(magrittr) # For the '%<>%' pipe operator
+
+# Read-in townhomes and condo sales data
+townhomes <- read_xlsx("2017-comparable-sales-condos-townhomes.xlsx") 
+
+# Read-in single family home sales data
+single_family <- read_xlsx("2017-comparable-sales-single-family.xlsx") 
+
+# Check column names and formats
+glimpse(townhomes) 
+glimpse(single_family)
+# 'sale_price' column was coerced to numeric and special characters '$' and ',' removed
+
+# Replace spaces in column names with underscores ('_') and make names lowercase
+# the package 'magrittr' is used for the pipe operator, this is loaded with the 'tidyverse' library
+colnames(townhomes) %<>% str_replace_all("\\s", "_") %<>% tolower() 
+colnames(single_family) %<>% str_replace_all("\\s", "_") %<>% tolower()
+
+# Rename column "actual_year_built" as "year_built" for consistency between datasets
+townhomes <- townhomes %>% 
+  rename(year_built = actual_year_built) 
+
+# Add a "classifcation" column to the single_family dataset and set all values to "Single Family"
+single_family <- single_family %>% 
+  mutate(classification = "Single Family")
+
+# bind_rows() throws an error b/c 'reception' column is numeric in townhomes dataset; convert to character
+townhomes$reception <- as.character(townhomes$reception)
+
+# Combine the datasets into one
+home_sales <- bind_rows(single_family, townhomes)
+glimpse(home_sales)
+# No new columns were created during the 'bind_rows()' process, indicating all colums align
+# Remove single_family and townhomes dataframes because they are no longer needed
+rm(single_family, townhomes)
+
+# unique(home_sales$classification) reveals a "Garage Only" type. Drop this.
+home_sales <- home_sales %>% filter(classification != "Garage Only") 
+
+# Rename the column "heated area" to "square_feet" for clarity, though technically not correct
+home_sales <- home_sales %>% 
+  rename(square_feet = heated_area)
+```
+
+## `ggplot2` package in R
+* Created by Hadley Wickham
+* Built on the "Grammar of Graphics" principles
+* Core **tidyverse** package
+* Every ggplot2 plot has 3 key components:
+  * **Data**
+  * **Aesthetic mappings** between variables and visuals 
+  * Layer(s) to describe how to render each observation (usually created with a **geom** function)
+
+## Basic scatterplot
+```{r scatter_location}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) +
+  geom_point()
+```
+
+## Transparency and color by location
+```{r scatter_location_color, warning= FALSE}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5)
+```
+
+## Zooming into sales above $1M
+```{r scatter_zoom, warning= FALSE}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian(ylim = c(1000000, 3000000))
+```
+
+## Add random noise with jitter
+```{r scatter_zoom_jitter, warning= FALSE}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) +
+  geom_jitter(alpha = 0.5, width = 300, height = 20000) +
+  coord_cartesian(ylim = c(1000000, 3000000))
+```
+
+## High sale price observations
+```{r high_sale_price}
+home_sales %>% arrange(desc(sale_price)) %>% select(c("sale_price", "location", "classification", "bedrooms", "square_feet")) %>% head(30)
+```
+
+## Remove erroneous high sale price observations
+```{r remove_highs}
+home_sales_fix <- home_sales %>% filter(location != "RIFLE" | classification != "Townhome" | sale_price != 2200000)
+home_sales_fix %>% filter(location == "RIFLE" & classification == "Townhome") %>% arrange(desc(sale_price)) %>% head(10)
+```
+
+## Linear model: sale price vs. square ft.
+```{r lm_overall_bw, warning= FALSE}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
+```
+
+## Linear model: sale price vs. square ft.
+```{r lm_overall_fixbw, warning= FALSE}
+ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
+```
+
+## Linear model: sale price vs. square feet
+```{r lm_overall, warning= FALSE}
+ggplot(data = home_sales, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
+```
+
+## Linear model with errors removed
+```{r lm_overall_fix, warning= FALSE}
+ggplot(data = home_sales_fix, aes(x = square_feet, y = sale_price, color = location)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) # Method set to lm for the linear model
+```
+
+## Linear model facetted by location
+```{r lm_facet, warning= FALSE}
+ggplot(home_sales, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ location)
+```
+
+## Linear model facetted by location
+```{r lm_facet_fix, warning= FALSE}
+ggplot(home_sales_fix, aes(square_feet, sale_price, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~ location)
+```
+

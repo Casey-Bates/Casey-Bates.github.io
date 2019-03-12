@@ -1,0 +1,65 @@
+---
+title: Using the tidyverse tidyr package to make wide datasets tall
+author: Casey Bates
+date: '2019-03-12'
+slug: using-the-tidyverse-tidyr-package-to-make-wide-datasets-tall
+categories:
+  - R
+tags:
+  - tidyverse
+  - tidyr
+  - sql
+  - data transformation
+  - gather
+comments: no
+images: ~
+---
+
+## Import seattle rain gauge dataset
+```{r seattle_rain}
+seattle_rain <- read_csv("Observed_Monthly_Rain_Gauge_Accumulations_Oct_2002_to_May_2017.csv")
+```
+
+## Display Monthly Rain Gauge Accumulations for Seattle
+```{r head_rain}
+seattle_rain 
+```
+
+## `gather` columns `RG01` through `RG20_25`
+```{r seattle_rain_tall}
+library(tidyr) 
+seattle_rain_tall <- seattle_rain %>% 
+  gather(RG01:RG20_25, key = rain_gauge, value = precip_inches) 
+seattle_rain_tall
+```
+
+## `gather` all columns *except* `Date`
+```{r seattle_rain_tall_fix}
+library(tidyr) 
+seattle_rain_tall <- seattle_rain %>% 
+  gather(key = rain_gauge, value = precip_inches, -Date) # Same result as before!
+seattle_rain_tall 
+```
+
+## Gathering in SQL
+```{sql eval=FALSE}
+SELECT date, 'rg01' as rain_gauge, rg01 as precip_inches FROM seattle_rain UNION 
+SELECT date, 'rg02' as rain_gauge, rg02 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg03' as rain_gauge, rg03 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg04' as rain_gauge, rg04 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg05' as rain_gauge, rg05 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg07' as rain_gauge, rg07 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg08' as rain_gauge, rg08 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg09' as rain_gauge, rg09 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg10_30' as rain_gauge, rg10_30 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg11' as rain_gauge, rg11 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg12' as rain_gauge, rg12 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg14' as rain_gauge, rg14 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg15' as rain_gauge, rg15 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg16' as rain_gauge, rg16 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg17' as rain_gauge, rg17 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg18' as rain_gauge, rg18 as precip_inches FROM seattle_rain UNION
+SELECT date, 'rg20_25' as rain_gauge, rg20_25 as precip_inches FROM seattle_rain
+ORDER BY rain_gauge, date;
+```
+
